@@ -1,7 +1,5 @@
 #include "DisplayLine.h"
 
-#include <Arduino.h>
-
 #include <LiquidCrystal.h>
 
 void DisplayLine::concat(char* dst, const char* src) {
@@ -15,35 +13,21 @@ void DisplayLine::concat(char* dst, const char* src) {
     dst[shift + srcLen] = 0;
 }
 
-void DisplayLine::concatInt(char* dst, int value) {
+void DisplayLine::concat(char* dst, String src) {
+    int srcLen = src.length();
+    int shift = strlen(dst);
+    int rest = DISPLAY_COLS - shift;
+
+    srcLen = min(srcLen, rest);
+
+    memcpy(dst + shift, src.c_str(), srcLen);
+    dst[shift + srcLen] = 0;
+}
+
+void DisplayLine::concat(char* dst, int value) {
     char str[DISPLAY_COLS + 1];
     itoa(value, str, 10);
     concat(dst, str);
-}
-
-bool DisplayLine::tryPrint(const char* src, bool blink, uint8_t alignSize, const char* mark) {
-    uint8_t srclen = strlen(src);
-    uint8_t dstlen = strlen(m_fwInfo);
-
-    if (!alignSize)
-        alignSize = srclen;
-
-    if (alignSize + dstlen > DISPLAY_COLS)
-        return false;
-
-    memset(m_fwInfo + dstlen, ' ', alignSize - srclen);
-    m_fwInfo[dstlen + alignSize - srclen] = 0;
-
-    if (blink) {
-        m_blinkLength = alignSize;
-        m_blinkPos = dstlen;
-
-        if (mark)
-            m_mark = mark;
-    }
-
-    concat(m_fwInfo, src);
-    return true;
 }
 
 void DisplayLine::reset() {
@@ -93,8 +77,13 @@ DisplayLine& DisplayLine::operator<<(const char* src) {
     return *this;
 }
 
+DisplayLine& DisplayLine::operator<<(String src) {
+    concat(m_fwInfo, src);
+    return *this;
+}
+
 DisplayLine& DisplayLine::operator<<(int value) {
-    concatInt(m_fwInfo, value);
+    concat(m_fwInfo, value);
     return *this;
 }
 
@@ -103,7 +92,12 @@ DisplayLine& DisplayLine::operator>>(const char* src) {
     return *this;
 }
 
+DisplayLine& DisplayLine::operator>>(String src) {
+    concat(m_bwInfo, src);
+    return *this;
+}
+
 DisplayLine& DisplayLine::operator>>(int value) {
-    concatInt(m_bwInfo, value);
+    concat(m_bwInfo, value);
     return *this;
 }

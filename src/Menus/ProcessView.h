@@ -6,16 +6,12 @@
 
 namespace Menu {
 
-class ProcessMenu : public BaseMenu {
+class ProcessView : public BaseMenu {
 public:
-    ProcessMenu(const ProgDesc&);
+    ProcessView(const ProgDesc&);
     void tick() override;
 
 private:
-    enum class Action : uint8_t { Process, View, Edit, CreateBasedOn, Delete, last_ };
-
-    static const char* getActionName(Action);
-
     ProgDesc m_progDesc;
     ListViewer m_listViewer;
 };

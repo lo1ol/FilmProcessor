@@ -14,6 +14,8 @@ int8_t getEncoderDir();
 
 void setupEncoder();
 
+String formatTime(uint16_t);
+
 extern App gApp;
 extern EncButton gEncoder;
 extern ButtonT<MODE_SWITCH_BTN> gModeSwitchBtn;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Arduino.h>
+
 #include <stdint.h>
 
 #include "Config.h"
@@ -15,16 +17,17 @@ public:
     void resetBlink(bool state = false);
 
     DisplayLine& operator<<(const char* src);
+    DisplayLine& operator<<(String src);
     DisplayLine& operator<<(int value);
 
     DisplayLine& operator>>(const char* src);
+    DisplayLine& operator>>(String src);
     DisplayLine& operator>>(int value);
-
-    bool tryPrint(const char* src, bool blink = false, uint8_t alignSize = 0, const char* mark = nullptr);
 
 private:
     static void concat(char* dst, const char* src);
-    static void concatInt(char* dst, int value);
+    static void concat(char* dst, String src);
+    static void concat(char* dst, int value);
 
     int m_line;
     LiquidCrystal& m_lcd;

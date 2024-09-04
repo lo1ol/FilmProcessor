@@ -22,3 +22,20 @@ int8_t getEncoderDir() {
         return 0;
     return gEncoder.dir();
 }
+
+String formatTime(uint16_t time) {
+    String res;
+
+    res.reserve(6);
+
+    uint8_t secs = time % 60;
+    uint8_t mins = time / 60;
+
+    res = String(mins);
+    res += ':';
+    if (secs < 10)
+        res += '0';
+    res += String(secs);
+
+    return res;
+}
