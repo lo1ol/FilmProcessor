@@ -14,9 +14,12 @@ public:
 
     void tick();
     void reset();
-    void resetBlink(bool state = false);
+    void resetBlink(bool state = false, uint16_t blinkSpeed = 500);
+
+    void printBlink(char src);
 
     DisplayLine& operator<<(const char* src);
+    DisplayLine& operator<<(char ch);
     DisplayLine& operator<<(String src);
     DisplayLine& operator<<(int value);
 
@@ -26,6 +29,7 @@ public:
 
 private:
     static void concat(char* dst, const char* src);
+    static void concat(char* dst, char src);
     static void concat(char* dst, String src);
     static void concat(char* dst, int value);
 
@@ -36,7 +40,7 @@ private:
     uint8_t m_blinkLength = 0;
     uint32_t m_blinkTimer = 0;
     bool m_blinkState = 0;
-    const char* m_mark;
+    uint16_t m_blinkSpeed;
 
     char m_fwInfo[DISPLAY_COLS + 1] = "";
     char m_bwInfo[DISPLAY_COLS + 1] = "";

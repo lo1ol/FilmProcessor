@@ -23,6 +23,14 @@ int8_t getEncoderDir() {
     return gEncoder.dir();
 }
 
+int8_t getEncoderShift() {
+    int8_t shift = getEncoderDir();
+    if (gEncoder.fast())
+        shift *= 5;
+
+    return shift;
+}
+
 String formatTime(uint16_t time) {
     String res;
 

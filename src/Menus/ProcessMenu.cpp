@@ -31,6 +31,11 @@ const char* ProcessMenu::getActionName(Action action) {
 }
 
 void ProcessMenu::tick() {
+    if (m_onCreateNew) {
+        m_stringAsker.tick();
+        return;
+    }
+
     m_listViewer.shift(getEncoderDir());
 
     for (uint8_t id = 0, i = m_listViewer.low(); i != m_listViewer.high(); ++i, ++id) {
@@ -42,7 +47,11 @@ void ProcessMenu::tick() {
         switch ((Action)m_listViewer.pos()) {
         case Action::View:
             gApp.setMenu(new ProcessView(m_progDesc));
-            break;
+            return;
+        case Action::CreateBasedOn:
+            m_onCreateNew = true;
+            m_stringAsker = StringAsker("Name: ", m_progDesc.name);
+            return;
         default:
             return;
         }

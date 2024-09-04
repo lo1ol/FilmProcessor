@@ -3,6 +3,7 @@
 #include "../BaseMenu.h"
 #include "../ListViewer.h"
 #include "../ProgDesc.h"
+#include "../StringAsker.h"
 
 namespace Menu {
 
@@ -18,6 +19,8 @@ private:
 
     ProgDesc m_progDesc;
     ListViewer m_listViewer;
+    bool m_onCreateNew = false;
+    StringAsker m_stringAsker;
 };
 
 } // namespace Menu

@@ -5,6 +5,9 @@
 #include "Config.h"
 #include "DisplayLine.h"
 
+constexpr auto kAcceptSymbol = 0x01;
+constexpr auto kBackSymbol = 0x02;
+
 class Display {
 public:
     Display(LiquidCrystal&& lcd);
@@ -13,7 +16,7 @@ public:
 
     void tick();
     void reset();
-    void resetBlink(bool state = false);
+    void resetBlink(bool state = false, uint16_t blinkSpeed = 500);
 
 private:
     LiquidCrystal m_lcd;

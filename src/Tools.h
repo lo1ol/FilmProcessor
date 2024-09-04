@@ -11,6 +11,7 @@
 #define ARRAY_SIZE(array) sizeof(array) / sizeof((array)[0])
 
 int8_t getEncoderDir();
+int8_t getEncoderShift();
 
 void setupEncoder();
 
