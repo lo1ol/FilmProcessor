@@ -12,6 +12,7 @@
 
 int8_t getEncoderDir();
 int8_t getEncoderShift();
+bool getTime(uint16_t& time);
 
 void setupEncoder();
 

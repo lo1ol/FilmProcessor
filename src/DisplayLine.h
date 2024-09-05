@@ -17,20 +17,22 @@ public:
     void resetBlink(bool state = false, uint16_t blinkSpeed = 500);
 
     void printBlink(char src);
+    void printBlink(const char* src, bool right = false);
+    void printBlink(const String& src, bool right = false);
 
     DisplayLine& operator<<(const char* src);
     DisplayLine& operator<<(char ch);
-    DisplayLine& operator<<(String src);
+    DisplayLine& operator<<(const String& src);
     DisplayLine& operator<<(int value);
 
     DisplayLine& operator>>(const char* src);
-    DisplayLine& operator>>(String src);
+    DisplayLine& operator>>(const String& src);
     DisplayLine& operator>>(int value);
 
 private:
     static void concat(char* dst, const char* src);
     static void concat(char* dst, char src);
-    static void concat(char* dst, String src);
+    static void concat(char* dst, const String& src);
     static void concat(char* dst, int value);
 
     int m_line;

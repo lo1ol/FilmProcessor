@@ -13,9 +13,10 @@ public:
     uint8_t high() const;
     uint8_t pos() const { return m_pos; }
     bool choosen(uint8_t pos) const { return m_pos == pos; }
+    void setMax(uint8_t max);
 
 private:
-    const uint8_t m_max;
+    uint8_t m_max;
     uint8_t m_low;
     uint8_t m_pos;
     bool m_pageView;

@@ -41,9 +41,34 @@ void ListViewer::shift(int8_t shift_) {
     if (m_pos > (m_low + DISPLAY_ROWS))
         m_low = m_pos - DISPLAY_ROWS;
 
-    adjustForPageView();
+    if (m_pageView) {
+        adjustForPageView();
+        return;
+    }
+
+    if (shift_ >= 0 && m_pos != m_max && m_pos == m_low + DISPLAY_ROWS - 1)
+        ++m_low;
+    if (shift_ < 0 && m_pos != 0 && m_pos == m_low)
+        --m_low;
 }
 
 uint8_t ListViewer::high() const {
     return min(m_max, m_low + DISPLAY_ROWS);
+}
+
+void ListViewer::setMax(uint8_t max) {
+    m_max = max;
+    if (m_pos > m_max) {
+        if (m_max)
+            m_pos = m_max - 1;
+        else
+            m_pos = 0;
+    }
+
+    if (m_low + DISPLAY_ROWS > m_max) {
+        if (m_max < DISPLAY_ROWS)
+            m_low = 0;
+        else
+            m_low = m_max - DISPLAY_ROWS;
+    }
 }

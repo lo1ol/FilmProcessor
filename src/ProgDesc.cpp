@@ -5,8 +5,7 @@
 #include <assert.h>
 
 uint8_t ProgDesc::numberOfSteps() const {
-    uint8_t cnt = 0;
-    for (; cnt != ARRAY_SIZE(steps); ++cnt) {
+    for (uint8_t cnt = 0; cnt != ARRAY_SIZE(steps); ++cnt) {
         if (steps[cnt].action == Action::Finish)
             return cnt + 1;
     }
@@ -25,13 +24,34 @@ const char* ProgDesc::getStepName(uint8_t step) const {
     case Action::Dev2:
         return "Dev 2";
     case Action::ExtraBath:
-        return "Extra bath";
+        return "Extra";
     case Action::Wash:
         return "Wash";
     case Action::Wait:
         return "Wait";
     case Action::Finish:
         return "Finish";
+    case Action::last_:
+        break;
+    }
+
+    assert(false);
+}
+
+bool ProgDesc::stepSupportTime(uint8_t step) const {
+    switch (steps[step].action) {
+    case Action::Dev:
+    case Action::Bleach:
+    case Action::Fix:
+    case Action::Dev2:
+    case Action::ExtraBath:
+    case Action::Wash:
+        return true;
+    case Action::Wait:
+    case Action::Finish:
+        return false;
+    case Action::last_:
+        break;
     }
 
     assert(false);

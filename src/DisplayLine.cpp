@@ -24,7 +24,7 @@ void DisplayLine::concat(char* dst, char ch) {
     dst[shift + srcLen] = 0;
 }
 
-void DisplayLine::concat(char* dst, String src) {
+void DisplayLine::concat(char* dst, const String& src) {
     int srcLen = src.length();
     int shift = strlen(dst);
     int rest = DISPLAY_COLS - shift;
@@ -88,7 +88,7 @@ DisplayLine& DisplayLine::operator<<(char src) {
     return *this;
 }
 
-DisplayLine& DisplayLine::operator<<(String src) {
+DisplayLine& DisplayLine::operator<<(const String& src) {
     concat(m_fwInfo, src);
     return *this;
 }
@@ -103,7 +103,7 @@ DisplayLine& DisplayLine::operator>>(const char* src) {
     return *this;
 }
 
-DisplayLine& DisplayLine::operator>>(String src) {
+DisplayLine& DisplayLine::operator>>(const String& src) {
     concat(m_bwInfo, src);
     return *this;
 }
@@ -117,4 +117,20 @@ void DisplayLine::printBlink(char src) {
     m_blinkPos = strlen(m_fwInfo);
     m_blinkLength = 1;
     *this << src;
+}
+
+void DisplayLine::printBlink(const char* src, bool right) {
+    m_blinkLength = strlen(src);
+
+    if (right) {
+        m_blinkPos = DISPLAY_COLS - strlen(m_bwInfo) - strlen(src);
+        *this >> src;
+    } else {
+        m_blinkPos = strlen(m_fwInfo);
+        *this << src;
+    }
+}
+
+void DisplayLine::printBlink(const String& src, bool right) {
+    printBlink(src.c_str(), right);
 }

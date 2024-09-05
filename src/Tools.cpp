@@ -31,6 +31,35 @@ int8_t getEncoderShift() {
     return shift;
 }
 
+bool getTime(uint16_t& time) {
+    int8_t shift = getEncoderShift();
+    auto oldTime = time;
+    int16_t sTime = time;
+
+    int16_t factor;
+    if ((sTime + shift) < 60)
+        factor = 1;
+    else if ((sTime + shift) < 60 * 10)
+        factor = 5;
+    else if ((sTime + shift) < 60 * 30)
+        factor = 10;
+    else
+        factor = 30;
+
+    sTime += shift * factor;
+    sTime = (sTime / factor) * factor;
+
+    if (sTime < 0)
+        sTime = 0;
+
+    if (sTime > 60 * 60)
+        sTime = 60 * 60;
+
+    time = sTime;
+
+    return time != oldTime;
+}
+
 String formatTime(uint16_t time) {
     String res;
 

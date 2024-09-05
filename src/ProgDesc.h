@@ -13,6 +13,7 @@ public:
         Wash,
         Wait,
         Finish,
+        last_,
     };
 
     struct Step {
@@ -22,6 +23,7 @@ public:
 
     uint8_t numberOfSteps() const;
     const char* getStepName(uint8_t step) const;
+    bool stepSupportTime(uint8_t step) const;
 
     const char* name;
     Step steps[12];

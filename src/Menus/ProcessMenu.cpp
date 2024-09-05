@@ -4,6 +4,7 @@
 
 #include "../Memory.h"
 #include "../Tools.h"
+#include "ProcessEdit.h"
 #include "ProcessView.h"
 
 namespace Menu {
@@ -47,6 +48,9 @@ void ProcessMenu::tick() {
         switch ((Action)m_listViewer.pos()) {
         case Action::View:
             gApp.setMenu(new ProcessView(m_progDesc));
+            return;
+        case Action::Edit:
+            gApp.setMenu(new ProcessEdit(m_progDesc));
             return;
         case Action::CreateBasedOn:
             m_onCreateNew = true;
