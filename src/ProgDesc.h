@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include <Arduino.h>
+
 class ProgDesc {
 public:
     enum class Action {
@@ -25,6 +27,6 @@ public:
     const char* getStepName(uint8_t step) const;
     bool stepSupportTime(uint8_t step) const;
 
-    const char* name;
+    String name;
     Step steps[12];
 };

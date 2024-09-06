@@ -34,6 +34,12 @@ const char* ProcessMenu::getActionName(Action action) {
 void ProcessMenu::tick() {
     if (m_onCreateNew) {
         m_stringAsker.tick();
+        if (m_stringAsker.finish()) {
+            ProgDesc newProg = m_progDesc;
+            newProg.name = m_stringAsker.result();
+            newProg.name.trim();
+            gApp.setMenu(new ProcessEdit(newProg));
+        }
         return;
     }
 

@@ -13,6 +13,6 @@ public:
 public:
     String m_result;
     const char* m_greeting;
-    bool m_finish;
+    bool m_finish = false;
     uint8_t m_pos;
 };
