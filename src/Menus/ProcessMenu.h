@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../BaseMenu.h"
-#include "../ListViewer.h"
+#include "../ListSelector.h"
 #include "../ProgDesc.h"
 #include "../StringAsker.h"
 
@@ -18,7 +18,7 @@ private:
     static const char* getActionName(Action);
 
     ProgDesc m_progDesc;
-    ListViewer m_listViewer;
+    ListSelector m_listSelector;
     bool m_onCreateNew = false;
     StringAsker m_stringAsker;
 };

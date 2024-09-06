@@ -4,9 +4,9 @@
 
 #include <stdint.h>
 
-class ListViewer {
+class ListSelector {
 public:
-    ListViewer(uint8_t max, bool pageView = false, uint8_t pos = 0);
+    ListSelector(uint8_t max, uint8_t pos = 0);
 
     void shift(int8_t);
     uint8_t low() const { return m_low; }
@@ -19,5 +19,4 @@ private:
     uint8_t m_max;
     uint8_t m_low;
     uint8_t m_pos;
-    bool m_pageView;
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../BaseMenu.h"
-#include "../ListViewer.h"
+#include "../ListSelector.h"
 #include "../ProgDesc.h"
 
 namespace Menu {
@@ -15,7 +15,7 @@ private:
     enum class Step { select, editAction, editTime, last_ };
 
     ProgDesc m_progDesc;
-    ListViewer m_listViewer;
+    ListSelector m_listSelector;
     Step m_step = Step::select;
     bool m_changeEnd = false;
 };

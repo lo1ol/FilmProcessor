@@ -6,17 +6,17 @@
 
 namespace Menu {
 
-ProcessList::ProcessList() : m_listViewer(gMemory.getProgNum()) {}
+ProcessList::ProcessList() : m_listSelector(gMemory.getProgNum()) {}
 
 void ProcessList::tick() {
-    m_listViewer.shift(getEncoderDir());
-    for (uint8_t id = 0, i = m_listViewer.low(); i != m_listViewer.high(); ++i, ++id) {
-        gDisplay[id] << (m_listViewer.choosen(i) ? ">" : " ");
+    m_listSelector.shift(getEncoderDir());
+    for (uint8_t id = 0, i = m_listSelector.low(); i != m_listSelector.high(); ++i, ++id) {
+        gDisplay[id] << (m_listSelector.choosen(i) ? ">" : " ");
         gDisplay[id] << gMemory.getProg(i).name;
     }
 
     if (gModeSwitchBtn.click())
-        gApp.setMenu(new ProcessMenu(gMemory.getProg(m_listViewer.pos())));
+        gApp.setMenu(new ProcessMenu(gMemory.getProg(m_listSelector.pos())));
 }
 
 } // namespace Menu

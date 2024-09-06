@@ -9,7 +9,7 @@
 
 namespace Menu {
 
-ProcessMenu::ProcessMenu(const ProgDesc& progDesc) : m_progDesc(progDesc), m_listViewer((uint8_t)Action::last_) {}
+ProcessMenu::ProcessMenu(const ProgDesc& progDesc) : m_progDesc(progDesc), m_listSelector((uint8_t)Action::last_) {}
 
 const char* ProcessMenu::getActionName(Action action) {
     switch (action) {
@@ -37,15 +37,15 @@ void ProcessMenu::tick() {
         return;
     }
 
-    m_listViewer.shift(getEncoderDir());
+    m_listSelector.shift(getEncoderDir());
 
-    for (uint8_t id = 0, i = m_listViewer.low(); i != m_listViewer.high(); ++i, ++id) {
-        gDisplay[id] << (m_listViewer.choosen(i) ? ">" : " ");
-        gDisplay[id] << getActionName((Action)i);
+    for (uint8_t id = 0, i = m_listSelector.low(); i != m_listSelector.high(); ++i, ++id) {
+        gDisplay[id] << (m_listSelector.choosen(i) ? ">" : " ");
+        gDisplay[id] << getActionName((Action)(i));
     }
 
     if (gModeSwitchBtn.click()) {
-        switch ((Action)m_listViewer.pos()) {
+        switch ((Action)m_listSelector.pos()) {
         case Action::View:
             gApp.setMenu(new ProcessView(m_progDesc));
             return;

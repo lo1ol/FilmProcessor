@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../BaseMenu.h"
-#include "../ListViewer.h"
+#include "../ListSelector.h"
 
 namespace Menu {
 
@@ -11,7 +11,7 @@ public:
     void tick() override;
 
 private:
-    ListViewer m_listViewer;
+    ListSelector m_listSelector;
 };
 
 } // namespace Menu

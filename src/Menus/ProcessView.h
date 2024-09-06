@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../BaseMenu.h"
-#include "../ListViewer.h"
+#include "../PageViewer.h"
 #include "../ProgDesc.h"
 
 namespace Menu {
@@ -13,7 +13,7 @@ public:
 
 private:
     ProgDesc m_progDesc;
-    ListViewer m_listViewer;
+    PageViewer m_pageViewer;
 };
 
 } // namespace Menu

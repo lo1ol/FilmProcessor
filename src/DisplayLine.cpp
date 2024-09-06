@@ -134,3 +134,16 @@ void DisplayLine::printBlink(const char* src, bool right) {
 void DisplayLine::printBlink(const String& src, bool right) {
     printBlink(src.c_str(), right);
 }
+
+void DisplayLine::printHeader(const String& src) {
+    auto srcLen = src.length();
+    auto asteriskLen = DISPLAY_COLS - srcLen;
+    auto leftAsteriskLen = asteriskLen / 2;
+    auto rightAsteriskLen = DISPLAY_COLS - srcLen - leftAsteriskLen;
+
+    for (uint8_t i = 0; i != leftAsteriskLen; ++i)
+        *this << '*';
+    *this << src;
+    for (uint8_t i = 0; i != rightAsteriskLen; ++i)
+        *this << '*';
+}

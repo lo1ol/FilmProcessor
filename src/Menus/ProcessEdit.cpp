@@ -5,18 +5,18 @@
 
 namespace Menu {
 
-ProcessEdit::ProcessEdit(const ProgDesc& progDesc) : m_progDesc(progDesc), m_listViewer(progDesc.numberOfSteps()) {}
+ProcessEdit::ProcessEdit(const ProgDesc& progDesc) : m_progDesc(progDesc), m_listSelector(progDesc.numberOfSteps()) {}
 
 void ProcessEdit::tick() {
     if (m_step == Step::select)
-        m_listViewer.shift(getEncoderDir());
+        m_listSelector.shift(getEncoderDir());
 
-    uint8_t currentChem = m_listViewer.pos();
+    uint8_t currentChem = m_listSelector.pos();
 
-    for (uint8_t id = 0, i = m_listViewer.low(); i != m_listViewer.high(); ++i, ++id) {
-        gDisplay[id] << (m_listViewer.choosen(i) ? ">" : " ");
+    for (uint8_t id = 0, i = m_listSelector.low(); i != m_listSelector.high(); ++i, ++id) {
+        gDisplay[id] << (m_listSelector.choosen(i) ? ">" : " ");
 
-        if (!m_listViewer.choosen(i) || m_step == Step::select) {
+        if (!m_listSelector.choosen(i) || m_step == Step::select) {
             gDisplay[id] << m_progDesc.getStepName(i);
 
             if (m_progDesc.stepSupportTime(i))
@@ -31,16 +31,16 @@ void ProcessEdit::tick() {
 
             m_progDesc.steps[currentChem].action =
                 ADD_TO_ENUM(ProgDesc::Action, m_progDesc.steps[currentChem].action, shift);
-            gDisplay[id].printBlink(m_progDesc.getStepName(i));
-            if (m_progDesc.stepSupportTime(i))
-                gDisplay[id] >> formatTime(m_progDesc.steps[i].time);
+            gDisplay[id].printBlink(m_progDesc.getStepName(currentChem));
+            if (m_progDesc.stepSupportTime(currentChem))
+                gDisplay[id] >> formatTime(m_progDesc.steps[currentChem].time);
         }
 
         if (m_step == Step::editTime) {
             if (getTime(m_progDesc.steps[currentChem].time))
                 gDisplay.resetBlink();
-            gDisplay[id] << m_progDesc.getStepName(i);
-            gDisplay[id].printBlink(formatTime(m_progDesc.steps[i].time), true);
+            gDisplay[id] << m_progDesc.getStepName(currentChem);
+            gDisplay[id].printBlink(formatTime(m_progDesc.steps[currentChem].time), true);
         }
     }
 
@@ -55,7 +55,7 @@ void ProcessEdit::tick() {
                 m_progDesc.steps[currentChem + 1].time = 0;
             }
 
-            m_listViewer.setMax(m_progDesc.numberOfSteps());
+            m_listSelector.setMax(m_progDesc.numberOfSteps());
         }
 
         m_step = ADD_TO_ENUM(Step, m_step, 1);

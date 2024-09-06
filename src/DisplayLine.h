@@ -20,6 +20,8 @@ public:
     void printBlink(const char* src, bool right = false);
     void printBlink(const String& src, bool right = false);
 
+    void printHeader(const String& src);
+
     DisplayLine& operator<<(const char* src);
     DisplayLine& operator<<(char ch);
     DisplayLine& operator<<(const String& src);
