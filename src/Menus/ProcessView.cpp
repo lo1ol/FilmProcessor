@@ -2,6 +2,7 @@
 
 #include "../Memory.h"
 #include "../Tools.h"
+#include "ProcessMenu.h"
 
 namespace Menu {
 
@@ -13,6 +14,11 @@ void ProcessView::tick() {
     for (uint8_t id = 0, i = m_pageViewer.low(); i != m_pageViewer.high(); ++i, ++id) {
         gDisplay[id] << m_progDesc.getStepName(i);
         gDisplay[id] >> formatTime(m_progDesc.steps[i].time);
+    }
+
+    if (gBackBtn.click()) {
+        gApp.setMenu(new ProcessMenu(m_progDesc));
+        return;
     }
 }
 

@@ -22,5 +22,6 @@ uint16_t unformatTime(String time);
 extern App gApp;
 extern EncButton gEncoder;
 extern ButtonT<MODE_SWITCH_BTN> gModeSwitchBtn;
+extern ButtonT<BACK_BTN> gBackBtn;
 extern Display gDisplay;
 extern Memory gMemory;

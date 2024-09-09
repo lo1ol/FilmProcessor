@@ -2,6 +2,7 @@
 
 #include "../Memory.h"
 #include "../Tools.h"
+#include "ProcessMenu.h"
 
 namespace Menu {
 
@@ -65,6 +66,11 @@ void ProcessEdit::tick() {
         if (m_step == Step::editAction) {
             m_changeEnd = m_progDesc.steps[currentChem].action == ProgDesc::Action::Finish;
         }
+    }
+
+    if (gBackBtn.click()) {
+        gApp.setMenu(new ProcessMenu(m_progDesc));
+        return;
     }
 }
 

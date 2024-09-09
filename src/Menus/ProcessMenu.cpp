@@ -5,6 +5,7 @@
 #include "../Memory.h"
 #include "../Tools.h"
 #include "ProcessEdit.h"
+#include "ProcessList.h"
 #include "ProcessView.h"
 
 namespace Menu {
@@ -41,6 +42,10 @@ void ProcessMenu::tick() {
             strcpy(newProg.name, res.c_str());
             gApp.setMenu(new ProcessEdit(newProg));
         }
+
+        if (gBackBtn.click()) {
+            m_onCreateNew = false;
+        }
         return;
     }
 
@@ -66,6 +71,11 @@ void ProcessMenu::tick() {
         default:
             return;
         }
+    }
+
+    if (gBackBtn.click()) {
+        gApp.setMenu(new ProcessList());
+        return;
     }
 }
 

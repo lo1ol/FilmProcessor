@@ -15,5 +15,6 @@ void loop() {
     gEncoder.tick();
     gDisplay.tick();
     gModeSwitchBtn.tick();
+    gBackBtn.tick();
     gApp.tick();
 }

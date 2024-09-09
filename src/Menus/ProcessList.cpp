@@ -2,25 +2,29 @@
 
 #include "../Memory.h"
 #include "../Tools.h"
+#include "MainMenu.h"
 #include "ProcessMenu.h"
 
 namespace Menu {
 
-ProcessList::ProcessList() : m_listSelector(gMemory.getProgNum() + 1) {}
+ProcessList::ProcessList() : m_listSelector(gMemory.getProgNum()) {}
 
 void ProcessList::tick() {
     m_listSelector.shift(getEncoderDir());
     for (uint8_t id = 0, i = m_listSelector.low(); i != m_listSelector.high(); ++i, ++id) {
         gDisplay[id] << (m_listSelector.choosen(i) ? ">" : " ");
-        if (i == gMemory.getProgNum()) {
-            gDisplay[id] << "puk";
-            continue;
-        }
         gDisplay[id] << gMemory.getProg(i).name;
     }
 
-    if (gModeSwitchBtn.click())
+    if (gModeSwitchBtn.click()) {
         gApp.setMenu(new ProcessMenu(gMemory.getProg(m_listSelector.pos())));
+        return;
+    }
+
+    if (gBackBtn.click()) {
+        gApp.setMenu(new MainMenu());
+        return;
+    }
 }
 
 } // namespace Menu

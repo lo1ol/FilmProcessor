@@ -13,6 +13,7 @@
 #define DISPLAY_COLS 16
 
 #define MODE_SWITCH_BTN A0
+#define BACK_BTN A1
 
 #define ENCODER_DT 6
 #define ENCODER_CLK 7
