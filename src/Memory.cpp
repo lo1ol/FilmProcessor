@@ -46,7 +46,67 @@ ProgDesc Memory::getProg(uint8_t i) const {
     return res;
 }
 
-void Memory::dump() const {}
+void Memory::dump() const {
+    uint8_t progId = 0;
+    Serial.println("[");
+    while (true) {
+        ProgDesc progDesc;
+        EEPROM.get(sizeof(ProgDesc) * progId, progDesc);
+        if (progDesc.name[0] == 0)
+            break;
+
+        if (progId)
+            Serial.println(",");
+
+        JsonDocument doc;
+
+        doc["name"] = progDesc.name;
+
+        JsonArray steps = doc["steps"].to<JsonArray>();
+        doc["steps"] = steps;
+
+        for (uint8_t stepId = 0; progDesc.steps[stepId].action != ProgDesc::Action::Finish; ++stepId) {
+            JsonObject step = steps.add<JsonObject>();
+            switch (progDesc.steps[stepId].action) {
+            case ProgDesc::Action::Dev:
+                step["action"] = "Dev";
+                break;
+            case ProgDesc::Action::Bleach:
+                step["action"] = "Bleach";
+                break;
+            case ProgDesc::Action::Fix:
+                step["action"] = "Fix";
+                break;
+            case ProgDesc::Action::Dev2:
+                step["action"] = "Dev2";
+                break;
+            case ProgDesc::Action::ExtraBath:
+                step["action"] = "Extra";
+                break;
+            case ProgDesc::Action::Wash:
+                step["action"] = "Wash";
+                break;
+            case ProgDesc::Action::Wait:
+                step["action"] = "Wait";
+                break;
+            case ProgDesc::Action::Finish:
+            case ProgDesc::Action::last_:
+                assert(false);
+                break;
+            }
+
+            if (progDesc.stepSupportTime(stepId)) {
+                step["time"] = formatTime(progDesc.steps[stepId].time);
+            }
+        }
+
+        serializeJson(doc, Serial);
+
+        ++progId;
+    }
+
+    Serial.println("]");
+}
 
 void Memory::load() {
     JsonDocument doc;

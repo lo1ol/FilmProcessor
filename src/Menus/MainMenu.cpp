@@ -43,6 +43,7 @@ void MainMenu::tick() {
             gMemory.load();
             return;
         default:
+            gMemory.dump();
             return;
         }
     }
