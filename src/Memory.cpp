@@ -1,37 +1,154 @@
 #include "Memory.h"
 
-ProgDesc gProgs[] = {
-    { "c-41",
-      {
-          { ProgDesc::Action::Dev, 240 },
-          { ProgDesc::Action::Bleach, 360 },
-          { ProgDesc::Action::Fix, 240 },
-          {
-              ProgDesc::Action::Finish,
-          },
-      } },
-    { "kek1",
-      {
-          { ProgDesc::Action::Finish, 240 },
-      } },
-    { "kek2",
-      {
-          { ProgDesc::Action::Finish, 240 },
-      } },
-    { "kek3",
-      {
-          { ProgDesc::Action::Finish, 240 },
-      } },
-    { "kek4",
-      {
-          { ProgDesc::Action::Finish, 240 },
-      } },
-};
+#include <ArduinoJson.h>
+#include <EEPROM.h>
 
-uint8_t Memory::getProgNum() {
-    return 5;
+#include "Tools.h"
+
+Memory::Memory() {
+    int16_t idx = 0;
+    m_progNum = 0;
+    while (true) {
+        ProgDesc progDesc;
+        EEPROM.get(idx, progDesc);
+
+        bool hasEnd = false;
+        for (uint8_t i = 0; i != sizeof(progDesc.name); ++i) {
+            if (!progDesc.name[i]) {
+                hasEnd = true;
+                break;
+            }
+        }
+
+        if (!hasEnd) {
+            progDesc.name[0] = 0;
+            EEPROM.put(idx, progDesc);
+            return;
+        }
+
+        if (progDesc.name[0] == 0)
+            return;
+
+        ++m_progNum;
+        idx += sizeof(progDesc);
+    }
 }
 
-ProgDesc Memory::getProg(uint8_t i) {
-    return gProgs[i];
+void Memory::saveProg(const ProgDesc&) {}
+
+uint8_t Memory::getProgNum() const {
+    return m_progNum;
+}
+
+ProgDesc Memory::getProg(uint8_t i) const {
+    ProgDesc res;
+    EEPROM.get(sizeof(ProgDesc) * i, res);
+    return res;
+}
+
+void Memory::dump() const {}
+
+void Memory::load() {
+    JsonDocument doc;
+    DeserializationError error;
+
+    uint8_t progId = 0;
+    while (true) {
+        String progBuf;
+        progBuf.reserve(450);
+        while (true) {
+            Serial.println("Ready to read chunk");
+            String chunk = Serial.readString();
+            progBuf += chunk;
+            chunk.trim();
+
+            if (chunk.length() == 0)
+                break;
+        }
+        Serial.println("Finish read prog");
+
+        error = deserializeJson(doc, progBuf.c_str());
+        if (error)
+            goto finish;
+
+        auto object = doc.as<JsonObject>();
+
+        ProgDesc progDesc;
+        if (!object.containsKey("name")) {
+            Serial.println("Process name has to be specified");
+            goto finish;
+        }
+
+        const char* name = object["name"];
+        if (strlen(name) > sizeof(progDesc.name) + 1) {
+            Serial.print("Process name too long: ");
+            Serial.println(name);
+            goto finish;
+        }
+
+        strcpy(progDesc.name, name);
+
+        if (!object.containsKey("steps")) {
+            Serial.println("Process steps have to be specified");
+            goto finish;
+        }
+
+        int stepId = 0;
+        for (JsonObject stepDesc : object["steps"].as<JsonArray>()) {
+            if (!stepDesc.containsKey("action")) {
+                Serial.println("Process step has to specify name");
+                goto finish;
+            }
+            const char* action = stepDesc["action"];
+
+            if (!strcmp(action, "Dev"))
+                progDesc.steps[stepId].action = ProgDesc::Action::Dev;
+            else if (!strcmp(action, "Bleach"))
+                progDesc.steps[stepId].action = ProgDesc::Action::Bleach;
+            else if (!strcmp(action, "Fix"))
+                progDesc.steps[stepId].action = ProgDesc::Action::Fix;
+            else if (!strcmp(action, "Dev2"))
+                progDesc.steps[stepId].action = ProgDesc::Action::Dev2;
+            else if (!strcmp(action, "Extra"))
+                progDesc.steps[stepId].action = ProgDesc::Action::ExtraBath;
+            else if (!strcmp(action, "Wash"))
+                progDesc.steps[stepId].action = ProgDesc::Action::Wash;
+            else if (!strcmp(action, "Wait"))
+                progDesc.steps[stepId].action = ProgDesc::Action::Wait;
+            else {
+                Serial.print("Unknow step name");
+                Serial.println(action);
+                goto finish;
+            }
+
+            if (progDesc.stepSupportTime(stepId)) {
+                if (!stepDesc.containsKey("time")) {
+                    Serial.println("Process step has to specify time");
+                    goto finish;
+                }
+
+                const char* time = stepDesc["time"];
+                progDesc.steps[stepId].time = unformatTime(time);
+            }
+
+            ++stepId;
+        }
+
+        progDesc.steps[stepId].action = ProgDesc::Action::Finish;
+
+        EEPROM.put(sizeof(ProgDesc) * progId, progDesc);
+        ++progId;
+    }
+
+finish:
+    if (error && error != DeserializationError::EmptyInput) {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+    }
+
+    ProgDesc lastProgDesc;
+    lastProgDesc.name[0] = 0;
+    EEPROM.put(sizeof(ProgDesc) * progId, lastProgDesc);
+    Serial.print(progId);
+    Serial.println(" program was louded");
 }

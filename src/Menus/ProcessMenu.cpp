@@ -36,8 +36,9 @@ void ProcessMenu::tick() {
         m_stringAsker.tick();
         if (m_stringAsker.finish()) {
             ProgDesc newProg = m_progDesc;
-            newProg.name = m_stringAsker.result();
-            newProg.name.trim();
+            auto res = m_stringAsker.result();
+            res.trim();
+            strcpy(newProg.name, res.c_str());
             gApp.setMenu(new ProcessEdit(newProg));
         }
         return;

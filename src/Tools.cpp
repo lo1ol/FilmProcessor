@@ -6,6 +6,7 @@ App gApp;
 Display gDisplay(LiquidCrystal(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7));
 EncButton gEncoder(ENCODER_DT, ENCODER_CLK);
 ButtonT<MODE_SWITCH_BTN> gModeSwitchBtn;
+Memory gMemory;
 
 void isr() {
     gEncoder.tickISR();
@@ -75,4 +76,15 @@ String formatTime(uint16_t time) {
     res += String(secs);
 
     return res;
+}
+
+uint16_t unformatTime(String str) {
+    auto delim = str.indexOf(':');
+    auto minStr = str.substring(0, delim);
+    auto secStr = str.substring(delim + 1);
+
+    auto min = minStr.toInt();
+    auto sec = secStr.toInt();
+
+    return min * 60 + sec;
 }

@@ -6,12 +6,16 @@
 
 namespace Menu {
 
-ProcessList::ProcessList() : m_listSelector(gMemory.getProgNum()) {}
+ProcessList::ProcessList() : m_listSelector(gMemory.getProgNum() + 1) {}
 
 void ProcessList::tick() {
     m_listSelector.shift(getEncoderDir());
     for (uint8_t id = 0, i = m_listSelector.low(); i != m_listSelector.high(); ++i, ++id) {
         gDisplay[id] << (m_listSelector.choosen(i) ? ">" : " ");
+        if (i == gMemory.getProgNum()) {
+            gDisplay[id] << "puk";
+            continue;
+        }
         gDisplay[id] << gMemory.getProg(i).name;
     }
 

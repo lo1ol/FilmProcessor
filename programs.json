@@ -1,0 +1,40 @@
+[
+	{
+		"name": "c-41",
+		"steps": [
+		{
+			"action": "Dev",
+			"time": "6:00"
+		},
+		{
+			"action": "Bleach",
+			"time": "3:00"
+		},
+		{
+			"action": "Fix",
+			"time": "6:00"
+		}
+		]
+	},
+	{
+		"name": "ecn2",
+		"steps": [
+		{
+			"action": "Extra",
+			"time": "1:00"
+		},
+		{
+			"action": "Dev",
+			"time": "6:00"
+		},
+		{
+			"action": "Bleach",
+			"time": "3:00"
+		},
+		{
+			"action": "Fix",
+			"time": "6:00"
+		}
+		]
+	}
+]

@@ -27,6 +27,6 @@ public:
     const char* getStepName(uint8_t step) const;
     bool stepSupportTime(uint8_t step) const;
 
-    String name;
+    char name[11];
     Step steps[12];
 };
