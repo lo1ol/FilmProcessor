@@ -18,23 +18,17 @@ public:
 
     void printBlink(char src);
     void printBlink(const char* src, bool right = false);
-    void printBlink(const String& src, bool right = false);
-
-    void printHeader(const String& src);
 
     DisplayLine& operator<<(const char* src);
     DisplayLine& operator<<(char ch);
-    DisplayLine& operator<<(const String& src);
     DisplayLine& operator<<(int value);
 
     DisplayLine& operator>>(const char* src);
-    DisplayLine& operator>>(const String& src);
     DisplayLine& operator>>(int value);
 
 private:
     static void concat(char* dst, const char* src);
     static void concat(char* dst, char src);
-    static void concat(char* dst, const String& src);
     static void concat(char* dst, int value);
 
     int m_line;

@@ -16,8 +16,8 @@ bool getTime(uint16_t& time);
 
 void setupEncoder();
 
-String formatTime(uint16_t);
-uint16_t unformatTime(String time);
+void formatTime(uint16_t, char* dst);
+uint16_t unformatTime(const char* time);
 
 extern App gApp;
 extern EncButton gEncoder;

@@ -26,6 +26,8 @@ public:
     uint8_t numberOfSteps() const;
     const char* getStepName(uint8_t step) const;
     bool stepSupportTime(uint8_t step) const;
+    static const char* getActionName(Action action);
+    static bool actionSupportTime(Action action);
 
     char name[11];
     Step steps[12];

@@ -1,15 +1,17 @@
 #include "StringAsker.h"
 
+#include <string.h>
+
 #include "Tools.h"
 
-StringAsker::StringAsker(const char* greeting, const String& base) : m_result(base), m_greeting(greeting), m_pos(0) {
-    if (base.length())
-        m_result += ' ';
+StringAsker::StringAsker(const char* greeting, const char* base) : m_greeting(greeting), m_pos(0) {
+    strcpy(m_result, base);
 }
 
 void StringAsker::tick() {
     gDisplay[0] << m_greeting << m_result;
-    if (m_result.length() < 10)
+    auto resLen = strlen(m_result);
+    if (resLen < 10)
         gDisplay[0].printBlink('_');
 
     auto shift = getEncoderShift();
@@ -60,14 +62,15 @@ void StringAsker::tick() {
 
     if (gModeSwitchBtn.click()) {
         if (choosenSym == kBackSymbol) {
-            if (m_result.length())
-                m_result.remove(m_result.length() - 1);
+            if (resLen)
+                m_result[resLen - 1] = 0;
         } else if (choosenSym == kAcceptSymbol) {
             m_finish = true;
-        } else if (m_result.length() < 10) {
+        } else if (resLen < 10) {
             if (choosenSym == '_')
                 choosenSym = ' ';
-            m_result += choosenSym;
+            m_result[resLen] = choosenSym;
+            m_result[resLen + 1] = 0;
         }
     }
 }

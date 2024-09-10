@@ -2,6 +2,8 @@
 
 #include <LiquidCrystal.h>
 
+#include <string.h>
+
 App gApp;
 Display gDisplay(LiquidCrystal(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7));
 EncButton gEncoder(ENCODER_DT, ENCODER_CLK);
@@ -62,30 +64,25 @@ bool getTime(uint16_t& time) {
     return time != oldTime;
 }
 
-String formatTime(uint16_t time) {
-    String res;
-
-    res.reserve(6);
-
+void formatTime(uint16_t time, char* dst) {
     uint8_t secs = time % 60;
     uint8_t mins = time / 60;
 
-    res = String(mins);
-    res += ':';
+    itoa(mins, dst, 10);
+    strcat(dst, ":");
     if (secs < 10)
-        res += '0';
-    res += String(secs);
+        strcat(dst, "0");
 
-    return res;
+    itoa(secs, dst + strlen(dst), 10);
 }
 
-uint16_t unformatTime(String str) {
-    auto delim = str.indexOf(':');
-    auto minStr = str.substring(0, delim);
-    auto secStr = str.substring(delim + 1);
-
-    auto min = minStr.toInt();
-    auto sec = secStr.toInt();
+uint16_t unformatTime(const char* str_) {
+    char str[6];
+    strcpy(str, str_);
+    auto delim = strchr(str, ':');
+    *delim = 0;
+    auto min = atoi(str);
+    auto sec = atoi(delim + 1);
 
     return min * 60 + sec;
 }

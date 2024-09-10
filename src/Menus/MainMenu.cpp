@@ -8,7 +8,15 @@
 
 namespace Menu {
 
-MainMenu::MainMenu() : m_listSelector((uint8_t)Action::last_) {}
+MainMenu::MainMenu() {
+    auto printer = [](void* ctx, uint8_t id, uint8_t line) {
+        gDisplay[line] << getActionName(static_cast<Action>(id));
+    };
+
+    auto maxGetter = [](void*) { return static_cast<uint8_t>(Action::last_); };
+
+    m_listSelector = ListSelector(printer, maxGetter, this);
+}
 
 const char* MainMenu::getActionName(Action action) {
     switch (action) {
@@ -28,11 +36,7 @@ const char* MainMenu::getActionName(Action action) {
 
 void MainMenu::tick() {
     m_listSelector.shift(getEncoderDir());
-
-    for (uint8_t id = 0, i = m_listSelector.low(); i != m_listSelector.high(); ++i, ++id) {
-        gDisplay[id] << (m_listSelector.choosen(i) ? ">" : " ");
-        gDisplay[id] << getActionName((Action)(i));
-    }
+    m_listSelector.tick();
 
     if (gModeSwitchBtn.click()) {
         switch ((Action)m_listSelector.pos()) {

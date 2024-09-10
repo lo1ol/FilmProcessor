@@ -10,7 +10,15 @@
 
 namespace Menu {
 
-ProcessMenu::ProcessMenu(const ProgDesc& progDesc) : m_progDesc(progDesc), m_listSelector((uint8_t)Action::last_) {}
+ProcessMenu::ProcessMenu(const ProgDesc& progDesc) : m_progDesc(progDesc) {
+    auto printer = [](void*, uint8_t id, uint8_t line) {
+        gDisplay[line] << getActionName(static_cast<Action>(id));
+    };
+
+    auto maxGetter = [](void*) { return static_cast<uint8_t>(Action::last_); };
+
+    m_listSelector = ListSelector(printer, maxGetter, this);
+}
 
 const char* ProcessMenu::getActionName(Action action) {
     switch (action) {
@@ -37,9 +45,7 @@ void ProcessMenu::tick() {
         m_stringAsker.tick();
         if (m_stringAsker.finish()) {
             ProgDesc newProg = m_progDesc;
-            auto res = m_stringAsker.result();
-            res.trim();
-            strcpy(newProg.name, res.c_str());
+            strcpy(newProg.name, m_stringAsker.result());
             gApp.setMenu(new ProcessEdit(newProg));
         }
 
@@ -50,11 +56,7 @@ void ProcessMenu::tick() {
     }
 
     m_listSelector.shift(getEncoderDir());
-
-    for (uint8_t id = 0, i = m_listSelector.low(); i != m_listSelector.high(); ++i, ++id) {
-        gDisplay[id] << (m_listSelector.choosen(i) ? ">" : " ");
-        gDisplay[id] << getActionName((Action)(i));
-    }
+    m_listSelector.tick();
 
     if (gModeSwitchBtn.click()) {
         switch ((Action)m_listSelector.pos()) {

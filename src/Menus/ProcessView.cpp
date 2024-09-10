@@ -6,15 +6,29 @@
 
 namespace Menu {
 
-ProcessView::ProcessView(const ProgDesc& progDesc) : m_progDesc(progDesc), m_pageViewer(progDesc.numberOfSteps() - 1) {}
+ProcessView::ProcessView(const ProgDesc& progDesc) : m_progDesc(progDesc) {
+    PageViewer::Printer printer = [](void* ctx_, uint8_t i, uint8_t line) {
+        auto ctx = reinterpret_cast<ProcessView*>(ctx_);
+        gDisplay[line] << ctx->m_progDesc.getStepName(i);
+        if (ctx->m_progDesc.stepSupportTime(i)) {
+            char formatedTime[6];
+            formatTime(ctx->m_progDesc.steps[i].time, formatedTime);
+
+            gDisplay[line] >> formatedTime;
+        }
+    };
+
+    auto maxGetter = [](void* ctx_) -> uint8_t {
+        auto ctx = reinterpret_cast<ProcessView*>(ctx_);
+        return ctx->m_progDesc.numberOfSteps() - 1;
+    };
+
+    m_pageViewer = PageViewer(printer, maxGetter, this);
+}
 
 void ProcessView::tick() {
     m_pageViewer.shift(getEncoderDir());
-
-    for (uint8_t id = 0, i = m_pageViewer.low(); i != m_pageViewer.high(); ++i, ++id) {
-        gDisplay[id] << m_progDesc.getStepName(i);
-        gDisplay[id] >> formatTime(m_progDesc.steps[i].time);
-    }
+    m_pageViewer.tick();
 
     if (gBackBtn.click()) {
         gApp.setMenu(new ProcessMenu(m_progDesc));

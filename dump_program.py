@@ -15,6 +15,7 @@ while True:
     data = arduino.readline().decode("utf-8").strip()
     if len(data) == 0:
         break;
+    print("Chunk received");
     res += data;
     arduino.timeout = 2
 

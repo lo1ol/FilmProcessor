@@ -4,15 +4,15 @@
 
 class StringAsker {
 public:
-    StringAsker(const char* greeting = "", const String& base = "");
+    StringAsker(const char* greeting = "", const char* base = "");
     bool finish() const { return m_finish; }
-    String result() const { return m_result; }
+    const char* result() const { return m_result; }
 
     void tick();
 
 public:
-    String m_result;
     const char* m_greeting;
     bool m_finish = false;
     uint8_t m_pos;
+    char m_result[11] = {};
 };

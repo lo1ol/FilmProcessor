@@ -6,11 +6,10 @@
 #include "Tools.h"
 
 Memory::Memory() {
-    int16_t idx = 0;
     m_progNum = 0;
     while (true) {
         ProgDesc progDesc;
-        EEPROM.get(idx, progDesc);
+        EEPROM.get(sizeof(progDesc) * m_progNum, progDesc);
 
         bool hasEnd = false;
         for (uint8_t i = 0; i != sizeof(progDesc.name); ++i) {
@@ -22,7 +21,7 @@ Memory::Memory() {
 
         if (!hasEnd) {
             progDesc.name[0] = 0;
-            EEPROM.put(idx, progDesc);
+            EEPROM.put(0, progDesc);
             return;
         }
 
@@ -30,11 +29,35 @@ Memory::Memory() {
             return;
 
         ++m_progNum;
-        idx += sizeof(progDesc);
     }
 }
 
-void Memory::saveProg(const ProgDesc&) {}
+void Memory::saveProg(const ProgDesc& newProgDesc) {
+    uint8_t id = 0;
+    while (true) {
+        ProgDesc progDesc;
+        EEPROM.get(sizeof(progDesc) * id, progDesc);
+
+        if (progDesc.name[0] == 0) {
+            break;
+        }
+
+        if (!strcmp(progDesc.name, newProgDesc.name))
+            break;
+
+        ++id;
+    }
+
+    EEPROM.put(sizeof(ProgDesc) * id, newProgDesc);
+
+    if (id != m_progNum)
+        return;
+   
+    ++m_progNum;
+    ProgDesc lastProgDesc;
+    lastProgDesc.name[0] = 0;
+    EEPROM.put(sizeof(ProgDesc) * m_progNum, lastProgDesc);
+}
 
 uint8_t Memory::getProgNum() const {
     return m_progNum;
@@ -96,7 +119,9 @@ void Memory::dump() const {
             }
 
             if (progDesc.stepSupportTime(stepId)) {
-                step["time"] = formatTime(progDesc.steps[stepId].time);
+                char formatedTime[6];
+                formatTime(progDesc.steps[stepId].time, formatedTime);
+                step["time"] = formatedTime;
             }
         }
 
@@ -205,6 +230,10 @@ finish:
         Serial.print("deserializeJson() failed: ");
         Serial.println(error.c_str());
     }
+    if (progId == 0)
+        return;
+
+    m_progNum = progId;
 
     ProgDesc lastProgDesc;
     lastProgDesc.name[0] = 0;

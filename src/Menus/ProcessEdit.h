@@ -9,6 +9,8 @@ namespace Menu {
 class ProcessEdit : public BaseMenu {
 public:
     ProcessEdit(const ProgDesc&);
+    ~ProcessEdit() override;
+
     void tick() override;
 
 private:
@@ -17,7 +19,7 @@ private:
     ProgDesc m_progDesc;
     ListSelector m_listSelector;
     Step m_step = Step::select;
-    bool m_changeEnd = false;
+    ProgDesc::Action m_newAction;
 };
 
 } // namespace Menu

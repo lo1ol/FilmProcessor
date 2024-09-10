@@ -6,17 +6,20 @@
 
 class ListSelector {
 public:
-    ListSelector(uint8_t max, uint8_t pos = 0);
+    using Printer = void (*)(void* ctx, uint8_t i, uint8_t line);
+    using MaxGetter = uint8_t (*)(void* ctx);
+
+    ListSelector() = default;
+    ListSelector(Printer, MaxGetter, void* ctx);
 
     void shift(int8_t);
-    uint8_t low() const { return m_low; }
-    uint8_t high() const;
+    void tick();
     uint8_t pos() const { return m_pos; }
-    bool choosen(uint8_t pos) const { return m_pos == pos; }
-    void setMax(uint8_t max);
 
 private:
-    uint8_t m_max;
-    uint8_t m_low;
-    uint8_t m_pos;
+    uint8_t m_low = 0;
+    uint8_t m_pos = 0;
+    Printer m_printer;
+    MaxGetter m_maxGetter;
+    void* m_ctx;
 };

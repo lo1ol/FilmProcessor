@@ -36,5 +36,30 @@
 			"time": "6:00"
 		}
 		]
+	},
+	{
+		"name": "foma r100",
+		"steps": [
+		{
+			"action": "Dev",
+			"time": "11:00"
+		},
+		{
+			"action": "Bleach",
+			"time": "1:00"
+		},
+		{
+			"action": "Extra",
+			"time": "1:00"
+		},
+		{
+			"action": "Dev",
+			"time": "11:00"
+		},
+		{
+			"action": "Fix",
+			"time": "6:00"
+		}
+		]
 	}
 ]

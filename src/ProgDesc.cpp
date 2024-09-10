@@ -4,17 +4,8 @@
 
 #include <assert.h>
 
-uint8_t ProgDesc::numberOfSteps() const {
-    for (uint8_t cnt = 0; cnt != ARRAY_SIZE(steps); ++cnt) {
-        if (steps[cnt].action == Action::Finish)
-            return cnt + 1;
-    }
-
-    assert(false);
-}
-
-const char* ProgDesc::getStepName(uint8_t step) const {
-    switch (steps[step].action) {
+const char* ProgDesc::getActionName(Action action) {
+    switch (action) {
     case Action::Dev:
         return "Dev";
     case Action::Bleach:
@@ -38,8 +29,8 @@ const char* ProgDesc::getStepName(uint8_t step) const {
     assert(false);
 }
 
-bool ProgDesc::stepSupportTime(uint8_t step) const {
-    switch (steps[step].action) {
+bool ProgDesc::actionSupportTime(Action action) {
+    switch (action) {
     case Action::Dev:
     case Action::Bleach:
     case Action::Fix:
@@ -55,5 +46,22 @@ bool ProgDesc::stepSupportTime(uint8_t step) const {
     }
 
     assert(false);
+}
+
+uint8_t ProgDesc::numberOfSteps() const {
+    for (uint8_t cnt = 0; cnt != ARRAY_SIZE(steps); ++cnt) {
+        if (steps[cnt].action == Action::Finish)
+            return cnt + 1;
+    }
+
+    assert(false);
+}
+
+const char* ProgDesc::getStepName(uint8_t step) const {
+    return getActionName(steps[step].action);
+}
+
+bool ProgDesc::stepSupportTime(uint8_t step) const {
+    return actionSupportTime(steps[step].action);
 }
 

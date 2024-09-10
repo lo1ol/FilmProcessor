@@ -6,13 +6,18 @@
 
 class PageViewer {
 public:
-    PageViewer(uint8_t max);
+    using Printer = void (*)(void* ctx, uint8_t i, uint8_t line);
+    using MaxGetter = uint8_t (*)(void* ctx);
 
+    PageViewer() = default;
+    PageViewer(Printer, MaxGetter, void* ctx);
+
+    void tick();
     void shift(int8_t);
-    uint8_t low() const { return m_low; }
-    uint8_t high() const;
 
 private:
-    uint8_t m_max;
     uint8_t m_low = 0;
+    Printer m_printer;
+    MaxGetter m_maxGetter;
+    void* m_ctx;
 };

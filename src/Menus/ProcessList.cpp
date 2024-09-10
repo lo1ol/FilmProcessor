@@ -7,14 +7,16 @@
 
 namespace Menu {
 
-ProcessList::ProcessList() : m_listSelector(gMemory.getProgNum()) {}
+ProcessList::ProcessList() {
+    auto printer = [](void*, uint8_t id, uint8_t line) { gDisplay[line] << gMemory.getProg(id).name; };
+    auto maxGetter = [](void*) -> uint8_t { return gMemory.getProgNum(); };
+
+    m_listSelector = ListSelector(printer, maxGetter, this);
+}
 
 void ProcessList::tick() {
     m_listSelector.shift(getEncoderDir());
-    for (uint8_t id = 0, i = m_listSelector.low(); i != m_listSelector.high(); ++i, ++id) {
-        gDisplay[id] << (m_listSelector.choosen(i) ? ">" : " ");
-        gDisplay[id] << gMemory.getProg(i).name;
-    }
+    m_listSelector.tick();
 
     if (gModeSwitchBtn.click()) {
         gApp.setMenu(new ProcessMenu(gMemory.getProg(m_listSelector.pos())));
