@@ -32,7 +32,7 @@ Memory::Memory() {
     }
 }
 
-void Memory::saveProg(const ProgDesc& newProgDesc) {
+void Memory::saveProg() {
     uint8_t id = 0;
     while (true) {
         ProgDesc progDesc;
@@ -42,13 +42,13 @@ void Memory::saveProg(const ProgDesc& newProgDesc) {
             break;
         }
 
-        if (!strcmp(progDesc.name, newProgDesc.name))
+        if (!strcmp(progDesc.name, m_cachedProg.name))
             break;
 
         ++id;
     }
 
-    EEPROM.put(sizeof(ProgDesc) * id, newProgDesc);
+    EEPROM.put(sizeof(ProgDesc) * id, m_cachedProg);
 
     if (id != m_progNum)
         return;
@@ -59,7 +59,7 @@ void Memory::saveProg(const ProgDesc& newProgDesc) {
     EEPROM.put(sizeof(ProgDesc) * m_progNum, lastProgDesc);
 }
 
-void Memory::deleteProg(const ProgDesc& targetProgDesc) {
+void Memory::deleteProg() {
     uint8_t id = 0;
     while (true) {
         ProgDesc progDesc;
@@ -68,7 +68,7 @@ void Memory::deleteProg(const ProgDesc& targetProgDesc) {
         if (progDesc.name[0] == 0)
             assert(false);
 
-        if (!strcmp(progDesc.name, targetProgDesc.name))
+        if (!strcmp(progDesc.name, m_cachedProg.name))
             break;
 
         ++id;
@@ -91,10 +91,12 @@ uint8_t Memory::getProgNum() const {
     return m_progNum;
 }
 
-ProgDesc Memory::getProg(uint8_t i) const {
-    ProgDesc res;
-    EEPROM.get(sizeof(ProgDesc) * i, res);
-    return res;
+void Memory::getProg(uint8_t i, ProgDesc& progDesc) const {
+    EEPROM.get(sizeof(ProgDesc) * i, progDesc);
+}
+
+void Memory::setProg(uint8_t id) {
+    EEPROM.get(sizeof(ProgDesc) * id, m_cachedProg);
 }
 
 void Memory::dump() const {

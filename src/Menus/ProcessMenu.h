@@ -10,7 +10,7 @@ namespace Menu {
 
 class ProcessMenu : public BaseMenu {
 public:
-    ProcessMenu(const ProgDesc&);
+    ProcessMenu();
     void tick() override;
 
 private:
@@ -18,7 +18,6 @@ private:
 
     static const char* getActionName(Action);
 
-    ProgDesc m_progDesc;
     ListSelector m_listSelector;
     bool m_onCreateNew = false;
     bool m_onDelete = false;

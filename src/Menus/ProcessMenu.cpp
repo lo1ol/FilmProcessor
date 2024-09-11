@@ -10,7 +10,7 @@
 
 namespace Menu {
 
-ProcessMenu::ProcessMenu(const ProgDesc& progDesc) : m_progDesc(progDesc) {
+ProcessMenu::ProcessMenu() {
     auto printer = [](void*, uint8_t id, uint8_t line) { gDisplay[line] << getActionName(static_cast<Action>(id)); };
 
     auto maxGetter = [](void*) { return static_cast<uint8_t>(Action::last_); };
@@ -47,9 +47,12 @@ void ProcessMenu::tick() {
         }
 
         if (m_stringAsker.finish()) {
-            ProgDesc newProg = m_progDesc;
+            ProgDesc newProg;
+            gMemory.getProg().copy(newProg);
+
             strcpy(newProg.name, m_stringAsker.result());
-            gApp.setMenu(new ProcessEdit(newProg));
+            gMemory.setProg(newProg);
+            gApp.setMenu(new ProcessEdit());
         }
 
         return;
@@ -59,7 +62,7 @@ void ProcessMenu::tick() {
         m_conirmAsker.tick();
         if (m_conirmAsker.finish()) {
             if (m_conirmAsker.result()) {
-                gMemory.deleteProg(m_progDesc);
+                gMemory.deleteProg();
                 gApp.setMenu(new ProcessList());
             } else {
                 m_onDelete = false;
@@ -74,14 +77,14 @@ void ProcessMenu::tick() {
     if (gModeSwitchBtn.click()) {
         switch ((Action)m_listSelector.pos()) {
         case Action::View:
-            gApp.setMenu(new ProcessView(m_progDesc));
+            gApp.setMenu(new ProcessView());
             return;
         case Action::Edit:
-            gApp.setMenu(new ProcessEdit(m_progDesc));
+            gApp.setMenu(new ProcessEdit());
             return;
         case Action::CreateBasedOn:
             m_onCreateNew = true;
-            m_stringAsker = StringAsker("Name: ", m_progDesc.name);
+            m_stringAsker = StringAsker("Name: ", gMemory.getProg().name);
             return;
         case Action::Delete:
             m_onDelete = true;

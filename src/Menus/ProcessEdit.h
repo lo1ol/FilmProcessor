@@ -8,14 +8,13 @@ namespace Menu {
 
 class ProcessEdit : public BaseMenu {
 public:
-    ProcessEdit(const ProgDesc&);
+    ProcessEdit();
 
     void tick() override;
 
 private:
     enum class Step { select, editAction, editTime, last_ };
 
-    ProgDesc m_progDesc;
     ListSelector m_listSelector;
     Step m_step = Step::select;
     ProgDesc::Action m_newAction;

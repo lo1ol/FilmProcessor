@@ -6,12 +6,13 @@
 
 namespace Menu {
 
-ProcessEdit::ProcessEdit(const ProgDesc& progDesc) : m_progDesc(progDesc) {
+ProcessEdit::ProcessEdit() {
     auto printer = [](void* ctx_, uint8_t id, uint8_t line) {
         auto ctx = reinterpret_cast<ProcessEdit*>(ctx_);
         bool choosen = id == ctx->m_listSelector.pos();
 
-        ProgDesc::Action action = ctx->m_progDesc.steps[id].action;
+        const auto& prog = gMemory.getProg();
+        ProgDesc::Action action = prog.steps[id].action;
 
         if (choosen && ctx->m_step == Step::editAction) {
             action = ctx->m_newAction;
@@ -20,9 +21,9 @@ ProcessEdit::ProcessEdit(const ProgDesc& progDesc) : m_progDesc(progDesc) {
             gDisplay[line] << ProgDesc::getActionName(action);
         }
 
-        if (ctx->m_progDesc.actionSupportTime(action)) {
+        if (prog.actionSupportTime(action)) {
             char formatedTime[6];
-            formatTime(ctx->m_progDesc.steps[id].time, formatedTime);
+            formatTime(prog.steps[id].time, formatedTime);
             if (choosen && ctx->m_step == Step::editTime)
                 gDisplay[line].printBlink(formatedTime, true);
             else
@@ -35,7 +36,7 @@ ProcessEdit::ProcessEdit(const ProgDesc& progDesc) : m_progDesc(progDesc) {
         if (ctx->m_step == Step::editAction && ctx->m_newAction == ProgDesc::Action::Finish)
             return ctx->m_listSelector.pos() + 1;
 
-        return ctx->m_progDesc.numberOfSteps();
+        return gMemory.getProg().numberOfSteps();
     };
 
     m_listSelector = ListSelector(printer, maxGetter, this);
@@ -54,8 +55,10 @@ void ProcessEdit::tick() {
         m_newAction = ADD_TO_ENUM(ProgDesc::Action, m_newAction, shift);
     }
 
+    auto& prog = gMemory.getProg();
+
     if (m_step == Step::editTime) {
-        if (getTime(m_progDesc.steps[currentChem].time))
+        if (getTime(prog.steps[currentChem].time))
             gDisplay.resetBlink();
     }
 
@@ -63,28 +66,28 @@ void ProcessEdit::tick() {
 
     if (gModeSwitchBtn.click()) {
         // last elem should be finish
-        if (currentChem == ARRAY_SIZE(m_progDesc.steps) - 1)
+        if (currentChem == ARRAY_SIZE(prog.steps) - 1)
             return;
         if (m_step == Step::editAction) {
-            if (m_progDesc.steps[currentChem].action == ProgDesc::Action::Finish) {
-                m_progDesc.steps[currentChem + 1].action = ProgDesc::Action::Finish;
-                m_progDesc.steps[currentChem + 1].time = 0;
+            if (prog.steps[currentChem].action == ProgDesc::Action::Finish) {
+                prog.steps[currentChem + 1].action = ProgDesc::Action::Finish;
+                prog.steps[currentChem + 1].time = 0;
             }
 
-            m_progDesc.steps[currentChem].action = m_newAction;
+            prog.steps[currentChem].action = m_newAction;
         }
 
         m_step = ADD_TO_ENUM(Step, m_step, 1);
 
-        if (m_step == Step::editTime && !m_progDesc.stepSupportTime(currentChem))
+        if (m_step == Step::editTime && !prog.stepSupportTime(currentChem))
             m_step = ADD_TO_ENUM(Step, m_step, 1);
         if (m_step == Step::editAction)
-            m_newAction = m_progDesc.steps[currentChem].action;
+            m_newAction = prog.steps[currentChem].action;
     }
 
     if (gBackBtn.click()) {
-        gMemory.saveProg(m_progDesc);
-        gApp.setMenu(new ProcessMenu(m_progDesc));
+        gMemory.saveProg();
+        gApp.setMenu(new ProcessMenu());
         return;
     }
 }

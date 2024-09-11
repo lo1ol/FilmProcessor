@@ -65,3 +65,6 @@ bool ProgDesc::stepSupportTime(uint8_t step) const {
     return actionSupportTime(steps[step].action);
 }
 
+void ProgDesc::copy(ProgDesc& target) const {
+    memcpy(&target, this, sizeof(*this));
+}

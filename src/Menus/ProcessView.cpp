@@ -6,22 +6,19 @@
 
 namespace Menu {
 
-ProcessView::ProcessView(const ProgDesc& progDesc) : m_progDesc(progDesc) {
-    PageViewer::Printer printer = [](void* ctx_, uint8_t i, uint8_t line) {
-        auto ctx = reinterpret_cast<ProcessView*>(ctx_);
-        gDisplay[line] << ctx->m_progDesc.getStepName(i);
-        if (ctx->m_progDesc.stepSupportTime(i)) {
+ProcessView::ProcessView() {
+    PageViewer::Printer printer = [](void*, uint8_t i, uint8_t line) {
+        auto& prog = gMemory.getProg();
+        gDisplay[line] << prog.getStepName(i);
+        if (prog.stepSupportTime(i)) {
             char formatedTime[6];
-            formatTime(ctx->m_progDesc.steps[i].time, formatedTime);
+            formatTime(prog.steps[i].time, formatedTime);
 
             gDisplay[line] >> formatedTime;
         }
     };
 
-    auto maxGetter = [](void* ctx_) -> uint8_t {
-        auto ctx = reinterpret_cast<ProcessView*>(ctx_);
-        return ctx->m_progDesc.numberOfSteps() - 1;
-    };
+    auto maxGetter = [](void*) -> uint8_t { return gMemory.getProg().numberOfSteps() - 1; };
 
     m_pageViewer = PageViewer(printer, maxGetter, this);
 }
@@ -31,7 +28,7 @@ void ProcessView::tick() {
     m_pageViewer.tick();
 
     if (gBackBtn.click()) {
-        gApp.setMenu(new ProcessMenu(m_progDesc));
+        gApp.setMenu(new ProcessMenu());
         return;
     }
 }
