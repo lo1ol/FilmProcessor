@@ -52,11 +52,39 @@ void Memory::saveProg(const ProgDesc& newProgDesc) {
 
     if (id != m_progNum)
         return;
-   
+
     ++m_progNum;
     ProgDesc lastProgDesc;
     lastProgDesc.name[0] = 0;
     EEPROM.put(sizeof(ProgDesc) * m_progNum, lastProgDesc);
+}
+
+void Memory::deleteProg(const ProgDesc& targetProgDesc) {
+    uint8_t id = 0;
+    while (true) {
+        ProgDesc progDesc;
+        EEPROM.get(sizeof(progDesc) * id, progDesc);
+
+        if (progDesc.name[0] == 0)
+            assert(false);
+
+        if (!strcmp(progDesc.name, targetProgDesc.name))
+            break;
+
+        ++id;
+    }
+
+    while (true) {
+        ProgDesc progDesc;
+        EEPROM.get(sizeof(progDesc) * (id + 1), progDesc);
+        EEPROM.put(sizeof(progDesc) * id, progDesc);
+
+        if (progDesc.name[0] == 0)
+            break;
+
+        ++id;
+    }
+    --m_progNum;
 }
 
 uint8_t Memory::getProgNum() const {

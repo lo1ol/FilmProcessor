@@ -9,7 +9,6 @@ namespace Menu {
 class ProcessEdit : public BaseMenu {
 public:
     ProcessEdit(const ProgDesc&);
-    ~ProcessEdit() override;
 
     void tick() override;
 

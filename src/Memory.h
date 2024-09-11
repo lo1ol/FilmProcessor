@@ -9,6 +9,7 @@ public:
     uint8_t getProgNum() const;
     ProgDesc getProg(uint8_t) const;
     void saveProg(const ProgDesc&);
+    void deleteProg(const ProgDesc&);
 
     void dump() const;
     void load();

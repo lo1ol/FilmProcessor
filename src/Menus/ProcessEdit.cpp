@@ -41,10 +41,6 @@ ProcessEdit::ProcessEdit(const ProgDesc& progDesc) : m_progDesc(progDesc) {
     m_listSelector = ListSelector(printer, maxGetter, this);
 }
 
-ProcessEdit::~ProcessEdit() {
-    gMemory.saveProg(m_progDesc);
-}
-
 void ProcessEdit::tick() {
     uint8_t currentChem = m_listSelector.pos();
     if (m_step == Step::select)
@@ -87,6 +83,7 @@ void ProcessEdit::tick() {
     }
 
     if (gBackBtn.click()) {
+        gMemory.saveProg(m_progDesc);
         gApp.setMenu(new ProcessMenu(m_progDesc));
         return;
     }
