@@ -81,8 +81,12 @@ void ProcessEdit::tick() {
 
         if (m_step == Step::editTime && !prog.stepSupportTime(currentChem))
             m_step = ADD_TO_ENUM(Step, m_step, 1);
-        if (m_step == Step::editAction)
+
+        if (m_step == Step::editAction) {
             m_newAction = prog.steps[currentChem].action;
+            if (!prog.stepSupportTime(currentChem))
+                prog.steps[currentChem].time = 0;
+        }
     }
 
     if (gBackBtn.click()) {
