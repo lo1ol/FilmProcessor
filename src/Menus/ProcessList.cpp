@@ -7,7 +7,7 @@
 
 namespace Menu {
 
-ProcessList::ProcessList() {
+ProcessList::ProcessList(uint8_t progId) {
     auto printer = [](void*, uint8_t id, uint8_t line) {
         ProgDesc progDesc;
         gMemory.getProg(id, progDesc);
@@ -15,7 +15,7 @@ ProcessList::ProcessList() {
     };
     auto maxGetter = [](void*) -> uint8_t { return gMemory.getProgNum(); };
 
-    m_listSelector = ListSelector(printer, maxGetter, this, "Processes");
+    m_listSelector = ListSelector(printer, maxGetter, this, "Processes", progId);
 }
 
 void ProcessList::tick() {

@@ -96,7 +96,7 @@ void ProcessMenu::tick() {
     }
 
     if (gBackBtn.click()) {
-        gApp.setMenu(new ProcessList());
+        gApp.setMenu(new ProcessList(gMemory.progId()));
         return;
     }
 }

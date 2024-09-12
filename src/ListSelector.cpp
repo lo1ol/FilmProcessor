@@ -4,8 +4,8 @@
 
 #include "Tools.h"
 
-ListSelector::ListSelector(Printer printer, MaxGetter maxGetter, void* ctx, const char* header)
-    : m_printer(printer), m_maxGetter(maxGetter), m_ctx(ctx), m_header(header) {}
+ListSelector::ListSelector(Printer printer, MaxGetter maxGetter, void* ctx, const char* header, uint8_t pos)
+    : m_low(pos), m_pos(pos), m_printer(printer), m_maxGetter(maxGetter), m_ctx(ctx), m_header(header) {}
 
 void ListSelector::shift(int8_t shift_) {
     int8_t minIndex = m_header ? -1 : 0;
@@ -24,6 +24,9 @@ void ListSelector::shift(int8_t shift_) {
 
     if (m_pos == m_low && m_low > minIndex)
         m_low = m_pos - 1;
+
+    if (m_low + DISPLAY_ROWS >= max_)
+        m_low = max(minIndex, max_ - DISPLAY_ROWS);
 
     if (m_pos == m_low + DISPLAY_ROWS - 1 && m_low + DISPLAY_ROWS < max_)
         m_low = m_pos - DISPLAY_ROWS + 2;

@@ -7,7 +7,7 @@ namespace Menu {
 
 class ProcessList : public BaseMenu {
 public:
-    ProcessList();
+    ProcessList(uint8_t progId = 0);
     void tick() override;
 
 private:

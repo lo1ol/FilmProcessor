@@ -11,6 +11,7 @@ public:
 
     // utils to cache one program
     void setProg(uint8_t id);
+    uint8_t progId();
     void setProg(const ProgDesc& prog) { prog.copy(m_cachedProg); }
     ProgDesc& getProg() { return m_cachedProg; }
     void saveProg();

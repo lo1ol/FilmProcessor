@@ -99,6 +99,22 @@ void Memory::setProg(uint8_t id) {
     EEPROM.get(sizeof(ProgDesc) * id, m_cachedProg);
 }
 
+uint8_t Memory::progId() {
+    uint8_t id = 0;
+    while (true) {
+        ProgDesc progDesc;
+        EEPROM.get(sizeof(progDesc) * id, progDesc);
+
+        if (progDesc.name[0] == 0)
+            assert(false);
+
+        if (!strcmp(progDesc.name, m_cachedProg.name))
+            return id;
+
+        ++id;
+    }
+}
+
 void Memory::dump() const {
     uint8_t progId = 0;
     Serial.println("[");
