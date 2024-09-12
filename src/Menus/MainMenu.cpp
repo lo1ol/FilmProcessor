@@ -22,10 +22,6 @@ const char* MainMenu::getActionName(Action action) {
     switch (action) {
     case Action::ProcessList:
         return "Process list";
-    case Action::LoadPrograms:
-        return "Load programs";
-    case Action::DumpPrograms:
-        return "Dump programs";
     case Action::last_:
         assert(false);
     }
@@ -43,12 +39,8 @@ void MainMenu::tick() {
         case Action::ProcessList:
             gApp.setMenu(new ProcessList());
             return;
-        case Action::LoadPrograms:
-            gMemory.load();
-            return;
-        default:
-            gMemory.dump();
-            return;
+        case Action::last_:
+            assert(false);
         }
     }
 }

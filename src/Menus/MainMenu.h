@@ -11,7 +11,7 @@ public:
     void tick() override;
 
 private:
-    enum class Action : uint8_t { ProcessList, LoadPrograms, DumpPrograms, last_ };
+    enum class Action : uint8_t { ProcessList, last_ };
 
     static const char* getActionName(Action);
 

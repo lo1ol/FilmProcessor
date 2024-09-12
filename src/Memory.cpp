@@ -269,5 +269,5 @@ finish:
     lastProgDesc.name[0] = 0;
     EEPROM.put(sizeof(ProgDesc) * progId, lastProgDesc);
     Serial.print(progId);
-    Serial.println(" program was louded");
+    Serial.println(" program was loaded");
 }
