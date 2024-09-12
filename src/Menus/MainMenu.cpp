@@ -15,7 +15,7 @@ MainMenu::MainMenu() {
 
     auto maxGetter = [](void*) { return static_cast<uint8_t>(Action::last_); };
 
-    m_listSelector = ListSelector(printer, maxGetter, this);
+    m_listSelector = ListSelector(printer, maxGetter, this, "Menu");
 }
 
 const char* MainMenu::getActionName(Action action) {

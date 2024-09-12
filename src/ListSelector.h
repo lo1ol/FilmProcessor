@@ -10,16 +10,17 @@ public:
     using MaxGetter = uint8_t (*)(void* ctx);
 
     ListSelector() = default;
-    ListSelector(Printer, MaxGetter, void* ctx);
+    ListSelector(Printer, MaxGetter, void* ctx, const char* header = nullptr);
 
     void shift(int8_t);
     void tick();
     uint8_t pos() const { return m_pos; }
 
 private:
-    uint8_t m_low = 0;
-    uint8_t m_pos = 0;
+    int8_t m_low = 0;
+    int8_t m_pos = 0;
     Printer m_printer;
     MaxGetter m_maxGetter;
     void* m_ctx;
+    const char* m_header;
 };

@@ -109,3 +109,17 @@ void DisplayLine::printBlink(const char* src, bool right) {
         *this << src;
     }
 }
+
+void DisplayLine::printHeader(const char* src) {
+    uint8_t strLen = strlen(src) + 2;
+    uint8_t leftPadding = ((DISPLAY_COLS - strLen) / 2) + ((DISPLAY_COLS - strLen) % 2);
+    uint8_t rightPadding = DISPLAY_COLS - strLen - leftPadding;
+
+    for (uint8_t i = 0; i != leftPadding; ++i)
+        *this << '*';
+    *this << ' ';
+    *this << src;
+    *this << ' ';
+    for (uint8_t i = 0; i != rightPadding; ++i)
+        *this << '*';
+}

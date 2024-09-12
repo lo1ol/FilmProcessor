@@ -15,7 +15,7 @@ ProcessList::ProcessList() {
     };
     auto maxGetter = [](void*) -> uint8_t { return gMemory.getProgNum(); };
 
-    m_listSelector = ListSelector(printer, maxGetter, this);
+    m_listSelector = ListSelector(printer, maxGetter, this, "Processes");
 }
 
 void ProcessList::tick() {

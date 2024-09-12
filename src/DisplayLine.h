@@ -19,6 +19,8 @@ public:
     void printBlink(char src);
     void printBlink(const char* src, bool right = false);
 
+    void printHeader(const char* src);
+
     DisplayLine& operator<<(const char* src);
     DisplayLine& operator<<(char ch);
     DisplayLine& operator<<(int value);
