@@ -66,7 +66,7 @@ void Memory::deleteProg() {
         EEPROM.get(sizeof(progDesc) * id, progDesc);
 
         if (progDesc.name[0] == 0)
-            assert(false);
+            MyAssert(false);
 
         if (!strcmp(progDesc.name, m_cachedProg.name))
             break;
@@ -106,7 +106,7 @@ uint8_t Memory::progId() {
         EEPROM.get(sizeof(progDesc) * id, progDesc);
 
         if (progDesc.name[0] == 0)
-            assert(false);
+            MyAssert(false);
 
         if (!strcmp(progDesc.name, m_cachedProg.name))
             return id;
@@ -160,7 +160,7 @@ void Memory::dump() const {
                 break;
             case ProgDesc::Action::Finish:
             case ProgDesc::Action::last_:
-                assert(false);
+                MyAssert(false);
                 break;
             }
 

@@ -1,6 +1,6 @@
 #include "MainMenu.h"
 
-#include <assert.h>
+#include "MyAssert.h"
 
 #include "../Memory.h"
 #include "../Tools.h"
@@ -23,10 +23,10 @@ const char* MainMenu::getActionName(Action action) {
     case Action::ProcessList:
         return "Process list";
     case Action::last_:
-        assert(false);
+        MyAssert(false);
     }
 
-    assert(false);
+    MyAssert(false);
     return nullptr;
 }
 
@@ -40,7 +40,7 @@ void MainMenu::tick() {
             gApp.setMenu(new ProcessList());
             return;
         case Action::last_:
-            assert(false);
+            MyAssert(false);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 #include "Tools.h"
 
-#include <assert.h>
+#include "MyAssert.h"
 
 const char* ProgDesc::getActionName(Action action) {
     switch (action) {
@@ -26,7 +26,7 @@ const char* ProgDesc::getActionName(Action action) {
         break;
     }
 
-    assert(false);
+    MyAssert(false);
 }
 
 bool ProgDesc::actionSupportTime(Action action) {
@@ -45,7 +45,7 @@ bool ProgDesc::actionSupportTime(Action action) {
         break;
     }
 
-    assert(false);
+    MyAssert(false);
 }
 
 uint8_t ProgDesc::numberOfSteps() const {
@@ -54,7 +54,7 @@ uint8_t ProgDesc::numberOfSteps() const {
             return cnt + 1;
     }
 
-    assert(false);
+    MyAssert(false);
 }
 
 const char* ProgDesc::getStepName(uint8_t step) const {

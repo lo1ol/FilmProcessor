@@ -1,6 +1,6 @@
 #include "ProcessMenu.h"
 
-#include <assert.h>
+#include "MyAssert.h"
 
 #include "../Memory.h"
 #include "../Tools.h"
@@ -31,10 +31,10 @@ const char* ProcessMenu::getActionName(Action action) {
     case Action::Delete:
         return "Delete";
     case Action::last_:
-        assert(false);
+        MyAssert(false);
     }
 
-    assert(false);
+    MyAssert(false);
     return nullptr;
 }
 
