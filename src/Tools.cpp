@@ -53,8 +53,8 @@ bool getTime(uint16_t& time) {
     sTime += shift * factor;
     sTime = (sTime / factor) * factor;
 
-    if (sTime < 0)
-        sTime = 0;
+    if (sTime < CHEM_LOAD_TIME * 2 / 1000)
+        sTime = CHEM_LOAD_TIME * 2 / 1000;
 
     if (sTime > 60 * 60)
         sTime = 60 * 60;

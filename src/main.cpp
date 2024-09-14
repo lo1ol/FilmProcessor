@@ -7,6 +7,12 @@ BaseMenu* gMenu;
 
 void setup() {
     Serial.begin(9600);
+    pinMode(DEV_VALVE, OUTPUT);
+    pinMode(FIX_VALVE, OUTPUT);
+    pinMode(EXTRA_VALVE, OUTPUT);
+    pinMode(WATER_VALVE, OUTPUT);
+    pinMode(WASTE_VALVE, OUTPUT);
+    pinMode(BLEACH_VALVE, OUTPUT);
     setupEncoder();
 
     Serial.println("Started");

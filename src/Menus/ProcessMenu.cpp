@@ -1,10 +1,11 @@
 #include "ProcessMenu.h"
 
-#include "MyAssert.h"
+#include "../MyAssert.h"
 
 #include "../Memory.h"
 #include "../Tools.h"
 #include "ProcessEdit.h"
+#include "ProcessExecutor.h"
 #include "ProcessList.h"
 #include "ProcessView.h"
 
@@ -90,8 +91,11 @@ void ProcessMenu::tick() {
             m_onDelete = true;
             m_conirmAsker = ConfirmAsker();
             return;
-        default:
+        case Action::Process:
+            gApp.setMenu(new ProcessExecutor());
             return;
+        case Action::last_:
+            MyAssert(false);
         }
     }
 

@@ -18,3 +18,11 @@
 #define ENCODER_DT 6
 #define ENCODER_CLK 7
 
+#define DEV_VALVE A2
+#define BLEACH_VALVE A3
+#define FIX_VALVE A4
+#define EXTRA_VALVE A5
+#define WATER_VALVE A6
+#define WASTE_VALVE A7
+
+#define CHEM_LOAD_TIME 10000
