@@ -39,16 +39,42 @@ void ProcessExecutor::tick() {
         updateStep();
     }
 
+    switch (m_phase) {
+    case Phase::Normal:
+        if (gModeSwitchBtn.click())
+            m_view = ADD_TO_ENUM(View, m_view, 1);
+
+        printProgressInfo();
+        break;
+    case Phase::OnBack:
+        m_confirmAsker.tick();
+        if (!m_confirmAsker.finish())
+            break;
+
+        if (m_confirmAsker.result()) {
+            // TODO safe exit
+            gApp.setMenu(new ProcessMenu());
+        } else {
+            m_phase = Phase::Normal;
+        }
+        break;
+    case Phase::OnWait:
+        // TODO
+        return;
+    case Phase::OnFinish:
+        gApp.setMenu(new ProcessMenu());
+        return;
+    }
+
     m_stepExecutor.tick();
 
-    if (gModeSwitchBtn.click())
-        m_view = ADD_TO_ENUM(View, m_view, 1);
-
-    printProgressInfo();
+    if (gBackBtn.click()) {
+        m_phase = Phase::OnBack;
+        m_confirmAsker = ConfirmAsker("Wonna stop?");
+    }
 
     if (!m_stepExecutor.finished())
         return;
-
     ++m_currentStep;
     updateStep();
 }
@@ -88,10 +114,10 @@ void ProcessExecutor::updateStep() {
     const auto& step = gMemory.getProg().steps[m_currentStep];
     switch (step.action) {
     case ProgDesc::Action::Finish:
-        gApp.setMenu(new ProcessMenu());
+        m_phase = Phase::OnFinish;
         return;
     case ProgDesc::Action::Wait:
-        // TODO
+        m_phase = Phase::OnWait;
         break;
     case ProgDesc::Action::Dev:
     case ProgDesc::Action::Bleach:
@@ -100,6 +126,7 @@ void ProcessExecutor::updateStep() {
     case ProgDesc::Action::ExtraBath:
     case ProgDesc::Action::Wash:
         m_stepExecutor = StepExecutor(step);
+        m_phase = Phase::Normal;
         break;
     case ProgDesc::Action::last_:
         break;
