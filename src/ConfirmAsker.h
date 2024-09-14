@@ -4,7 +4,13 @@
 
 class ConfirmAsker {
 public:
-    ConfirmAsker(const char* greeting = "Are you sure?");
+    enum class Type {
+        YesNo,
+        ClickConfirm,
+        HoldConfirm,
+    };
+
+    ConfirmAsker(const char* greeting = "Are you sure?", Type type = Type::YesNo);
     bool finish() const { return m_finish; }
     bool result() const { return m_result; }
 
@@ -12,6 +18,7 @@ public:
 
 public:
     const char* m_greeting;
+    Type m_type;
     bool m_finish = false;
     bool m_result = false;
 };

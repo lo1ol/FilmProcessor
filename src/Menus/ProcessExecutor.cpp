@@ -6,14 +6,7 @@
 
 namespace Menu {
 
-ProcessExecutor::ProcessExecutor() {
-    const auto& prog = gMemory.getProg();
-    for (uint8_t id = 0; ProgDesc::Action::Finish != prog.steps[id].action; ++id) {
-        m_totalTime += prog.steps[id].time;
-    }
-
-    m_totalTime *= 1000;
-}
+namespace {
 
 void printProgressString(uint32_t max, uint32_t cur, uint8_t line) {
     char progressString[11];
@@ -33,12 +26,19 @@ void printProgressString(uint32_t max, uint32_t cur, uint8_t line) {
     gDisplay[line] << progressString;
 }
 
-void ProcessExecutor::tick() {
-    if (!m_startTime) {
-        m_startTime = millis();
-        updateStep();
-    }
+} // namespace
 
+ProcessExecutor::ProcessExecutor() {
+    const auto& prog = gMemory.getProg();
+    for (uint8_t id = 0; ProgDesc::Action::Finish != prog.steps[id].action; ++id)
+        if (prog.stepSupportTime(id))
+            m_totalTime += prog.steps[id].time;
+
+    m_totalTime *= 1000;
+    updateStep();
+}
+
+void ProcessExecutor::tick() {
     switch (m_phase) {
     case Phase::Normal:
     case Phase::OnAbort:
@@ -60,16 +60,22 @@ void ProcessExecutor::tick() {
         }
         break;
     case Phase::OnWait:
-        // TODO
-        return;
+        m_confirmAsker.tick();
+        if (!m_confirmAsker.finish())
+            return;
+        nextStep();
+        break;
     case Phase::OnFinish:
+        m_confirmAsker.tick();
+        if (!m_confirmAsker.finish())
+            return;
         gApp.setMenu(new ProcessMenu());
         return;
     }
 
     m_stepExecutor.tick();
 
-    if (gBackBtn.click()) {
+    if (gBackBtn.click() && m_phase == Phase::Normal) {
         m_phase = Phase::OnBack;
         m_confirmAsker = ConfirmAsker("Wonna stop?");
     }
@@ -82,8 +88,7 @@ void ProcessExecutor::tick() {
         return;
     }
 
-    ++m_currentStep;
-    updateStep();
+    nextStep();
 }
 
 void ProcessExecutor::printProgressInfo() const {
@@ -94,7 +99,6 @@ void ProcessExecutor::printProgressInfo() const {
         gDisplay[1] << "Step: Aborting";
     else
         gDisplay[1] << "Step: " << prog.getStepName(m_currentStep);
-    auto passedTime = millis() - m_startTime;
 
     printProgressString(m_stepExecutor.stepTime(), m_stepExecutor.passedTime(), 2);
 
@@ -115,6 +119,7 @@ void ProcessExecutor::printProgressInfo() const {
     if (m_phase == Phase::OnAbort)
         return;
 
+    auto passedTime = m_prevStepsTime + m_stepExecutor.passedTime();
     printProgressString(m_totalTime, passedTime, 3);
 
     switch (m_view) {
@@ -131,13 +136,25 @@ void ProcessExecutor::printProgressInfo() const {
     }
 }
 
+void ProcessExecutor::nextStep() {
+    const auto& prog = gMemory.getProg();
+
+    if (prog.stepSupportTime(m_currentStep))
+        m_prevStepsTime += prog.steps[m_currentStep].time * 1000;
+    ++m_currentStep;
+    updateStep();
+}
+
 void ProcessExecutor::updateStep() {
     const auto& step = gMemory.getProg().steps[m_currentStep];
+
     switch (step.action) {
     case ProgDesc::Action::Finish:
+        m_confirmAsker = ConfirmAsker("Finish!", ConfirmAsker::Type::ClickConfirm);
         m_phase = Phase::OnFinish;
-        return;
+        break;
     case ProgDesc::Action::Wait:
+        m_confirmAsker = ConfirmAsker("Wait for actions", ConfirmAsker::Type::HoldConfirm);
         m_phase = Phase::OnWait;
         break;
     case ProgDesc::Action::Dev:

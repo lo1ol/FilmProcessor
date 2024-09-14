@@ -4,7 +4,7 @@
 
 #include "Tools.h"
 
-ConfirmAsker::ConfirmAsker(const char* greeting) : m_greeting(greeting) {}
+ConfirmAsker::ConfirmAsker(const char* greeting, Type type) : m_greeting(greeting), m_type(type) {}
 
 void ConfirmAsker::tick() {
     auto shift = getEncoderDir();
@@ -14,18 +14,34 @@ void ConfirmAsker::tick() {
     }
 
     gDisplay[0] << m_greeting;
-    gDisplay[3] << "   ";
-    if (!m_result)
-        gDisplay[3].printBlink("No");
-    else
-        gDisplay[3] << "No";
 
-    gDisplay[3] << "     ";
-    if (m_result)
-        gDisplay[3].printBlink("Yes");
-    else
-        gDisplay[3] << "Yes";
+    switch (m_type) {
+    case Type::HoldConfirm:
+        gDisplay[1] << "Hold to confirm";
+        gDisplay[3].printBlink("       Ok");
+        if (gModeSwitchBtn.hold())
+            m_finish = true;
+        break;
+    case Type::ClickConfirm:
+        gDisplay[3].printBlink("       Ok");
+        if (gModeSwitchBtn.click())
+            m_finish = true;
+        break;
+    case Type::YesNo:
+        gDisplay[3] << "   ";
+        if (!m_result)
+            gDisplay[3].printBlink("No");
+        else
+            gDisplay[3] << "No";
 
-    if (gModeSwitchBtn.click())
-        m_finish = true;
+        gDisplay[3] << "     ";
+        if (m_result)
+            gDisplay[3].printBlink("Yes");
+        else
+            gDisplay[3] << "Yes";
+
+        if (gModeSwitchBtn.click())
+            m_finish = true;
+        break;
+    }
 }
