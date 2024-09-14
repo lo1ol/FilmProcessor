@@ -99,7 +99,9 @@ void ProcessExecutor::printProgressInfo() const {
     const auto& prog = gMemory.getProg();
 
     gDisplay[0].printHeader(prog.name);
-    if (m_phase == Phase::OnAbort)
+    if (m_stepExecutor->preparing())
+        gDisplay[1] << "Step: Clean tube";
+    else if (m_phase == Phase::OnAbort)
         gDisplay[1] << "Step: Aborting";
     else
         gDisplay[1] << "Step: " << prog.getStepName(m_currentStep);
@@ -177,18 +179,21 @@ void ProcessExecutor::updateStep() {
     case ProgDesc::Action::Wait:
         m_confirmAsker = ConfirmAsker("Wait for actions", ConfirmAsker::Type::HoldConfirm);
         m_phase = Phase::OnWait;
+        m_needCleanTube = true;
         break;
     case ProgDesc::Action::Dev:
     case ProgDesc::Action::Bleach:
     case ProgDesc::Action::Fix:
     case ProgDesc::Action::Dev2:
     case ProgDesc::Action::ExtraBath:
-        m_stepExecutor = new ChemStepExecutor(step);
+        m_stepExecutor = new ChemStepExecutor(step, m_needCleanTube);
         m_phase = Phase::Normal;
+        m_needCleanTube = false;
         break;
     case ProgDesc::Action::Wash:
-        m_stepExecutor = new WashStepExecutor(step);
+        m_stepExecutor = new WashStepExecutor(step, m_needCleanTube);
         m_phase = Phase::Normal;
+        m_needCleanTube = false;
         break;
     case ProgDesc::Action::last_:
         MyAssert(false);

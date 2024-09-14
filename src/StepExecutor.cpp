@@ -27,6 +27,13 @@ StepExecutor::StepExecutor(const ProgDesc::Step& step) {
     m_stepTime = step.time * 1000L;
 }
 
+uint32_t StepExecutor::passedTime() const {
+    if (m_started)
+        return m_passedTime;
+    else
+        return 0;
+}
+
 void StepExecutor::tick() {
     if (!m_startTime) {
         m_startTime = millis();
@@ -36,7 +43,13 @@ void StepExecutor::tick() {
     m_passedTime = millis() - m_startTime;
 }
 
-ChemStepExecutor::ChemStepExecutor(const ProgDesc::Step& step) : StepExecutor(step) {
+void StepExecutor::start() {
+    m_passedTime = 0;
+    m_startTime = millis();
+    m_started = true;
+}
+
+ChemStepExecutor::ChemStepExecutor(const ProgDesc::Step& step, bool needCleanTubes) : StepExecutor(step), m_phase(needCleanTubes ? Phase::CleanTube : Phase::NotStarted) {
     switch (step.action) {
     case ProgDesc::Action::Dev:
         m_targetValve = DEV_VALVE;
@@ -72,8 +85,16 @@ ChemStepExecutor::ChemStepExecutor(const ProgDesc::Step& step) : StepExecutor(st
 void ChemStepExecutor::tick() {
     StepExecutor::tick();
     switch (m_phase) {
+    case Phase::CleanTube:
+        startUnLoadChem(WASTE_VALVE);
+        if (m_passedTime < CLEAN_TUBES_TIME)
+            break;
+        stopUnLoadChem(WASTE_VALVE);
+        m_phase = Phase::NotStarted;
+        break;
     case Phase::NotStarted:
         startLoadChem(m_targetValve);
+        start();
         m_phase = Phase::LoadChem;
         break;
     case Phase::LoadChem:
@@ -110,6 +131,7 @@ void ChemStepExecutor::tick() {
 
 void ChemStepExecutor::abort() {
     switch (m_phase) {
+    case Phase::CleanTube:
     case Phase::NotStarted:
         m_stepTime = 0;
         break;
@@ -129,15 +151,20 @@ void ChemStepExecutor::abort() {
 
     m_passedTime = 0;
     m_startTime = millis();
-    startUnLoadChem(m_targetValve);
+    if (m_isWaste)
+        startUnLoadChem(WASTE_VALVE);
+    else
+        startUnLoadChem(m_targetValve);
     m_phase = Phase::Abort;
 }
 
-WashStepExecutor::WashStepExecutor(const ProgDesc::Step& step)
-    : StepExecutor(step), m_phaseWasher(getPhaseWasher(step.time * 1000)) {}
+WashStepExecutor::WashStepExecutor(const ProgDesc::Step& step, bool needCleanTube)
+    : StepExecutor(step), m_phaseWasher(getPhaseWasher(step.time * 1000, needCleanTube)) {}
 
 void WashStepExecutor::tick() {
     StepExecutor::tick();
+    if (!m_started && !m_phaseWasher.preparing())
+        start();
 
     m_phaseWasher.tick();
     if (m_phaseWasher.finished()) {
@@ -161,12 +188,12 @@ void WashStepExecutor::abort() {
     m_passedTime = m_phaseWasher.passedTime();
 }
 
-ChemStepExecutor WashStepExecutor::getPhaseWasher(uint32_t time) {
+ChemStepExecutor WashStepExecutor::getPhaseWasher(uint32_t time, bool needCleanTube) {
     ProgDesc::Step step{ .action = ProgDesc::Action::Wash };
     if (time >= 4 * CHEM_LOAD_TIME + PURE_WASH_TIME * 2)
         step.time = (2 * CHEM_LOAD_TIME + PURE_WASH_TIME) / 1000;
     else
         step.time = lround(time / 1000.);
 
-    return ChemStepExecutor(step);
+    return ChemStepExecutor(step, needCleanTube);
 }

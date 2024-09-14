@@ -34,6 +34,7 @@ private:
     View m_view = View::PassedTime;
     Phase m_phase;
     ConfirmAsker m_confirmAsker;
+    bool m_needCleanTube = true;
 };
 
 } // namespace Menu
