@@ -49,7 +49,8 @@ void StepExecutor::start() {
     m_started = true;
 }
 
-ChemStepExecutor::ChemStepExecutor(const ProgDesc::Step& step, bool needCleanTubes) : StepExecutor(step), m_phase(needCleanTubes ? Phase::CleanTube : Phase::NotStarted) {
+ChemStepExecutor::ChemStepExecutor(const ProgDesc::Step& step, bool needCleanTubes)
+    : StepExecutor(step), m_phase(needCleanTubes ? Phase::CleanTube : Phase::NotStarted) {
     switch (step.action) {
     case ProgDesc::Action::Dev:
         m_targetValve = DEV_VALVE;

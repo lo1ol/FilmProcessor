@@ -2,6 +2,8 @@
 
 #include <LiquidCrystal.h>
 
+#include "Tools.h"
+
 void DisplayLine::concat(char* dst, const char* src) {
     int srcLen = strlen(src);
     int shift = strlen(dst);
@@ -122,4 +124,37 @@ void DisplayLine::printHeader(const char* src) {
     *this << ' ';
     for (uint8_t i = 0; i != rightPadding; ++i)
         *this << '*';
+}
+
+void DisplayLine::printTimeProgress(uint32_t maxTime, uint32_t curTime, bool rest) {
+    uint32_t printedTime;
+
+    if (rest) {
+        if (curTime >= maxTime)
+            printedTime = 0;
+        else
+            printedTime = maxTime - curTime;
+    } else {
+        printedTime = curTime;
+    }
+
+    char formatedTime[7];
+    formatTime(printedTime / 1000, formatedTime);
+    *this >> formatedTime;
+
+    char progressString[11];
+    auto progress = (curTime * 5L * 10L) / maxTime;
+    auto filledCells = progress / 5;
+    char unfilledCell = kLoad0Symbol + progress % 5;
+    for (uint8_t i = 0; i != 10; ++i) {
+        if (i < filledCells)
+            progressString[i] = kLoad5Symbol;
+        else if (i == filledCells)
+            progressString[i] = unfilledCell;
+        else
+            progressString[i] = 0;
+    }
+    progressString[10] = 0;
+
+    *this << progressString;
 }

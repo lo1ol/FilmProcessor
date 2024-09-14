@@ -6,28 +6,6 @@
 
 namespace Menu {
 
-namespace {
-
-void printProgressString(uint32_t max, uint32_t cur, uint8_t line) {
-    char progressString[11];
-    auto progress = (cur * 5L * 10L) / max;
-    auto filledCells = progress / 5;
-    char unfilledCell = kLoad0Symbol + progress % 5;
-    for (uint8_t i = 0; i != 10; ++i) {
-        if (i < filledCells)
-            progressString[i] = kLoad5Symbol;
-        else if (i == filledCells)
-            progressString[i] = unfilledCell;
-        else
-            progressString[i] = 0;
-    }
-    progressString[10] = 0;
-
-    gDisplay[line] << progressString;
-}
-
-} // namespace
-
 ProcessExecutor::ProcessExecutor() {
     const auto& prog = gMemory.getProg();
     for (uint8_t id = 0; ProgDesc::Action::Finish != prog.steps[id].action; ++id)
@@ -106,52 +84,14 @@ void ProcessExecutor::printProgressInfo() const {
     else
         gDisplay[1] << "Step: " << prog.getStepName(m_currentStep);
 
-    printProgressString(m_stepExecutor->stepTime(), m_stepExecutor->passedTime(), 2);
-
-    uint32_t restStepTime;
-    if (m_stepExecutor->passedTime() >= m_stepExecutor->stepTime())
-        restStepTime = 0;
-    else
-        restStepTime = m_stepExecutor->stepTime() - m_stepExecutor->passedTime();
-
-    char formatedTime[7];
-    switch (m_view) {
-    case View::PassedTime:
-        formatTime(m_stepExecutor->passedTime() / 1000, formatedTime);
-        gDisplay[2] >> formatedTime;
-        break;
-    case View::RestTime:
-        formatTime(restStepTime / 1000, formatedTime);
-        gDisplay[2] >> formatedTime;
-        break;
-    case View::last_:
-        MyAssert(false);
-    }
+    gDisplay[2].printTimeProgress(m_stepExecutor->stepTime(), m_stepExecutor->passedTime(), m_view == View::RestTime);
 
     if (m_phase == Phase::OnAbort)
         return;
 
     auto passedTime = m_prevStepsTime + m_stepExecutor->passedTime();
-    printProgressString(m_totalTime, passedTime, 3);
 
-    uint32_t restTotalTime;
-    if (m_totalTime - passedTime)
-        restTotalTime = 0;
-    else
-        restTotalTime = m_totalTime - passedTime;
-
-    switch (m_view) {
-    case View::PassedTime:
-        formatTime(passedTime / 1000, formatedTime);
-        gDisplay[3] >> formatedTime;
-        break;
-    case View::RestTime:
-        formatTime(restTotalTime / 1000, formatedTime);
-        gDisplay[3] >> formatedTime;
-        break;
-    case View::last_:
-        MyAssert(false);
-    }
+    gDisplay[3].printTimeProgress(m_totalTime, passedTime, m_view == View::RestTime);
 }
 
 void ProcessExecutor::nextStep() {

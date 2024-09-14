@@ -21,6 +21,8 @@ public:
 
     void printHeader(const char* src);
 
+    void printTimeProgress(uint32_t maxTime, uint32_t curTime, bool rest);
+
     DisplayLine& operator<<(const char* src);
     DisplayLine& operator<<(char ch);
     DisplayLine& operator<<(int value);

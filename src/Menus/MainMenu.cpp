@@ -4,6 +4,7 @@
 
 #include "../Memory.h"
 #include "../Tools.h"
+#include "MachineClean.h"
 #include "ProcessList.h"
 
 namespace Menu {
@@ -22,6 +23,8 @@ const char* MainMenu::getActionName(Action action) {
     switch (action) {
     case Action::ProcessList:
         return "Process list";
+    case Action::CleanMachine:
+        return "Clean machine";
     case Action::last_:
         MyAssert(false);
     }
@@ -38,6 +41,9 @@ void MainMenu::tick() {
         switch ((Action)m_listSelector.pos()) {
         case Action::ProcessList:
             gApp.setMenu(new ProcessList());
+            return;
+        case Action::CleanMachine:
+            gApp.setMenu(new MachineClean());
             return;
         case Action::last_:
             MyAssert(false);
