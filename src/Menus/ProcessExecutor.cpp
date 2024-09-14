@@ -10,7 +10,7 @@ namespace {
 
 void printProgressString(uint32_t max, uint32_t cur, uint8_t line) {
     char progressString[11];
-    auto progress = (cur * 5 * 10) / max;
+    auto progress = (cur * 5L * 10L) / max;
     auto filledCells = progress / 5;
     char unfilledCell = kLoad0Symbol + progress % 5;
     for (uint8_t i = 0; i != 10; ++i) {
@@ -34,7 +34,7 @@ ProcessExecutor::ProcessExecutor() {
         if (prog.stepSupportTime(id))
             m_totalTime += prog.steps[id].time;
 
-    m_totalTime *= 1000;
+    m_totalTime *= 1000L;
     updateStep();
 }
 ProcessExecutor::~ProcessExecutor() {
@@ -106,6 +106,12 @@ void ProcessExecutor::printProgressInfo() const {
 
     printProgressString(m_stepExecutor->stepTime(), m_stepExecutor->passedTime(), 2);
 
+    uint32_t restStepTime;
+    if (m_stepExecutor->passedTime() >= m_stepExecutor->stepTime())
+        restStepTime = 0;
+    else
+        restStepTime = m_stepExecutor->stepTime() - m_stepExecutor->passedTime();
+
     char formatedTime[7];
     switch (m_view) {
     case View::PassedTime:
@@ -113,7 +119,7 @@ void ProcessExecutor::printProgressInfo() const {
         gDisplay[2] >> formatedTime;
         break;
     case View::RestTime:
-        formatTime((m_stepExecutor->stepTime() - m_stepExecutor->passedTime()) / 1000, formatedTime);
+        formatTime(restStepTime / 1000, formatedTime);
         gDisplay[2] >> formatedTime;
         break;
     case View::last_:
@@ -126,13 +132,19 @@ void ProcessExecutor::printProgressInfo() const {
     auto passedTime = m_prevStepsTime + m_stepExecutor->passedTime();
     printProgressString(m_totalTime, passedTime, 3);
 
+    uint32_t restTotalTime;
+    if (m_totalTime - passedTime)
+        restTotalTime = 0;
+    else
+        restTotalTime = m_totalTime - passedTime;
+
     switch (m_view) {
     case View::PassedTime:
         formatTime(passedTime / 1000, formatedTime);
         gDisplay[3] >> formatedTime;
         break;
     case View::RestTime:
-        formatTime((m_totalTime - passedTime) / 1000, formatedTime);
+        formatTime(restTotalTime / 1000, formatedTime);
         gDisplay[3] >> formatedTime;
         break;
     case View::last_:
@@ -144,7 +156,7 @@ void ProcessExecutor::nextStep() {
     const auto& prog = gMemory.getProg();
 
     if (prog.stepSupportTime(m_currentStep))
-        m_prevStepsTime += prog.steps[m_currentStep].time * 1000;
+        m_prevStepsTime += prog.steps[m_currentStep].time * 1000L;
     ++m_currentStep;
     updateStep();
 }
@@ -171,12 +183,15 @@ void ProcessExecutor::updateStep() {
     case ProgDesc::Action::Fix:
     case ProgDesc::Action::Dev2:
     case ProgDesc::Action::ExtraBath:
-    case ProgDesc::Action::Wash:
         m_stepExecutor = new ChemStepExecutor(step);
         m_phase = Phase::Normal;
         break;
-    case ProgDesc::Action::last_:
+    case ProgDesc::Action::Wash:
+        m_stepExecutor = new WashStepExecutor(step);
+        m_phase = Phase::Normal;
         break;
+    case ProgDesc::Action::last_:
+        MyAssert(false);
     }
 }
 
