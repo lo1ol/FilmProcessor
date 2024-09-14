@@ -95,9 +95,9 @@ void StepExecutor::tick() {
     }
 }
 
-uint16_t StepExecutor::passedTime() const {
+uint32_t StepExecutor::passedTime() const {
     if (!m_startTime)
         return 0;
 
-    return (millis() - m_startTime) / 1000;
+    return millis() - m_startTime;
 }

@@ -34,8 +34,6 @@ void printProgressString(uint32_t max, uint32_t cur, uint8_t line) {
 }
 
 void ProcessExecutor::tick() {
-    const auto& prog = gMemory.getProg();
-
     if (!m_startTime) {
         m_startTime = millis();
         updateStep();
@@ -43,24 +41,47 @@ void ProcessExecutor::tick() {
 
     m_stepExecutor.tick();
 
-    gDisplay[0].printHeader(prog.name);
-    gDisplay[1] << "Step: " << prog.getStepName(m_currentStep);
-    char formatedTime[7];
+    if (gModeSwitchBtn.click())
+        m_view = ADD_TO_ENUM(View, m_view, 1);
 
-    printProgressString(prog.steps[m_currentStep].time, m_stepExecutor.passedTime(), 2);
-    formatTime(m_stepExecutor.passedTime(), formatedTime);
-    gDisplay[2] >> formatedTime;
-
-    auto passedTime = millis() - m_startTime;
-    printProgressString(m_totalTime, passedTime, 3);
-    formatTime(passedTime / 1000, formatedTime);
-    gDisplay[3] >> formatedTime;
+    printProgressInfo();
 
     if (!m_stepExecutor.finished())
         return;
 
     ++m_currentStep;
     updateStep();
+}
+
+void ProcessExecutor::printProgressInfo() const {
+    const auto& prog = gMemory.getProg();
+
+    gDisplay[0].printHeader(prog.name);
+    gDisplay[1] << "Step: " << prog.getStepName(m_currentStep);
+    auto passedTime = millis() - m_startTime;
+
+    printProgressString(prog.steps[m_currentStep].time * 1000, m_stepExecutor.passedTime(), 2);
+    printProgressString(m_totalTime, passedTime, 3);
+
+    char formatedTime[7];
+    switch (m_view) {
+    case View::PassedTime:
+        formatTime(m_stepExecutor.passedTime() / 1000, formatedTime);
+        gDisplay[2] >> formatedTime;
+
+        formatTime(passedTime / 1000, formatedTime);
+        gDisplay[3] >> formatedTime;
+        break;
+    case View::RestTime:
+        formatTime((prog.steps[m_currentStep].time * 1000 - m_stepExecutor.passedTime()) / 1000, formatedTime);
+        gDisplay[2] >> formatedTime;
+
+        formatTime((m_totalTime - passedTime) / 1000, formatedTime);
+        gDisplay[3] >> formatedTime;
+        break;
+    case View::last_:
+        MyAssert(false);
+    }
 }
 
 void ProcessExecutor::updateStep() {

@@ -9,7 +9,7 @@ public:
 
     void tick();
     bool finished() const { return m_phase == Phase::Finished; }
-    uint16_t passedTime() const;
+    uint32_t passedTime() const;
 
 private:
     enum class Phase : uint8_t {
