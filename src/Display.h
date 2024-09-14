@@ -5,8 +5,14 @@
 #include "Config.h"
 #include "DisplayLine.h"
 
-constexpr auto kAcceptSymbol = 0x01;
-constexpr auto kBackSymbol = 0x02;
+constexpr auto kAcceptSymbol = '\x01';
+constexpr auto kBackSymbol = '\x02';
+constexpr auto kLoad0Symbol = '\x03';
+constexpr auto kLoad1Symbol = '\x04';
+constexpr auto kLoad2Symbol = '\x05';
+constexpr auto kLoad3Symbol = '\x06';
+constexpr auto kLoad4Symbol = '\x07';
+constexpr auto kLoad5Symbol = '\x08';
 
 class Display {
 public:

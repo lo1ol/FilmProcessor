@@ -15,6 +15,24 @@ ProcessExecutor::ProcessExecutor() {
     m_totalTime *= 1000;
 }
 
+void printProgressString(uint32_t max, uint32_t cur, uint8_t line) {
+    char progressString[11];
+    auto progress = (cur * 5 * 10) / max;
+    auto filledCells = progress / 5;
+    char unfilledCell = kLoad0Symbol + progress % 5;
+    for (uint8_t i = 0; i != 10; ++i) {
+        if (i < filledCells)
+            progressString[i] = kLoad5Symbol;
+        else if (i == filledCells)
+            progressString[i] = unfilledCell;
+        else
+            progressString[i] = 0;
+    }
+    progressString[10] = 0;
+
+    gDisplay[line] << progressString;
+}
+
 void ProcessExecutor::tick() {
     const auto& prog = gMemory.getProg();
 
@@ -28,10 +46,15 @@ void ProcessExecutor::tick() {
     gDisplay[0].printHeader(prog.name);
     gDisplay[1] << "Step: " << prog.getStepName(m_currentStep);
     char formatedTime[7];
+
+    printProgressString(prog.steps[m_currentStep].time, m_stepExecutor.passedTime(), 2);
     formatTime(m_stepExecutor.passedTime(), formatedTime);
-    gDisplay[2] << "Step t: " >> formatedTime;
-    formatTime((millis() - m_startTime) / 1000, formatedTime);
-    gDisplay[3] << "Total t: " >> formatedTime;
+    gDisplay[2] >> formatedTime;
+
+    auto passedTime = millis() - m_startTime;
+    printProgressString(m_totalTime, passedTime, 3);
+    formatTime(passedTime / 1000, formatedTime);
+    gDisplay[3] >> formatedTime;
 
     if (!m_stepExecutor.finished())
         return;
