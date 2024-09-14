@@ -22,6 +22,7 @@ private:
         OnBack,
         OnFinish,
         OnWait,
+        OnAbort,
     };
 
     StepExecutor m_stepExecutor;

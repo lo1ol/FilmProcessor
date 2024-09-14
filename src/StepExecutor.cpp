@@ -60,7 +60,6 @@ void StepExecutor::tick() {
     uint32_t currentTime = millis() - m_startTime;
     switch (m_phase) {
     case Phase::NotStarted:
-        Serial.println(m_targetValve);
         startLoadChem(m_targetValve);
         m_startTime = millis();
         m_phase = Phase::LoadChem;
@@ -72,7 +71,7 @@ void StepExecutor::tick() {
         m_phase = Phase::Execute;
         break;
     case Phase::Execute:
-        if ((currentTime + CHEM_LOAD_TIME) < m_stepTime)
+        if (currentTime + CHEM_LOAD_TIME < m_stepTime)
             break;
         if (m_waste)
             startUnLoadChem(WASTE_VALVE);
@@ -81,6 +80,7 @@ void StepExecutor::tick() {
         m_phase = Phase::UnloadChem;
         break;
     case Phase::UnloadChem:
+    case Phase::Abort:
         if (currentTime < m_stepTime)
             break;
 
@@ -100,4 +100,28 @@ uint32_t StepExecutor::passedTime() const {
         return 0;
 
     return millis() - m_startTime;
+}
+
+void StepExecutor::abort() {
+    uint32_t currentTime = millis() - m_startTime;
+    switch (m_phase) {
+    case Phase::NotStarted:
+        m_stepTime = 0;
+        break;
+    case Phase::LoadChem:
+        m_stepTime = currentTime + 1000;
+        break;
+    case Phase::Execute:
+        m_stepTime = CHEM_LOAD_TIME;
+        break;
+    case Phase::UnloadChem:
+        m_stepTime = m_stepTime - currentTime;
+        break;
+    case Phase::Finished:
+    case Phase::Abort:
+        return;
+    }
+
+    m_startTime = millis();
+    m_phase = Phase::Abort;
 }

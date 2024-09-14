@@ -10,6 +10,8 @@ public:
     void tick();
     bool finished() const { return m_phase == Phase::Finished; }
     uint32_t passedTime() const;
+    uint32_t stepTime() const { return m_stepTime; }
+    void abort();
 
 private:
     enum class Phase : uint8_t {
@@ -18,6 +20,7 @@ private:
         Execute,
         UnloadChem,
         Finished,
+        Abort,
     };
 
     uint32_t m_stepTime;

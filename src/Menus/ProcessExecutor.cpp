@@ -41,6 +41,7 @@ void ProcessExecutor::tick() {
 
     switch (m_phase) {
     case Phase::Normal:
+    case Phase::OnAbort:
         if (gModeSwitchBtn.click())
             m_view = ADD_TO_ENUM(View, m_view, 1);
 
@@ -52,8 +53,8 @@ void ProcessExecutor::tick() {
             break;
 
         if (m_confirmAsker.result()) {
-            // TODO safe exit
-            gApp.setMenu(new ProcessMenu());
+            m_stepExecutor.abort();
+            m_phase = Phase::OnAbort;
         } else {
             m_phase = Phase::Normal;
         }
@@ -75,6 +76,12 @@ void ProcessExecutor::tick() {
 
     if (!m_stepExecutor.finished())
         return;
+
+    if (m_phase == Phase::OnAbort) {
+        gApp.setMenu(new ProcessMenu());
+        return;
+    }
+
     ++m_currentStep;
     updateStep();
 }
@@ -83,25 +90,39 @@ void ProcessExecutor::printProgressInfo() const {
     const auto& prog = gMemory.getProg();
 
     gDisplay[0].printHeader(prog.name);
-    gDisplay[1] << "Step: " << prog.getStepName(m_currentStep);
+    if (m_phase == Phase::OnAbort)
+        gDisplay[1] << "Step: Aborting";
+    else
+        gDisplay[1] << "Step: " << prog.getStepName(m_currentStep);
     auto passedTime = millis() - m_startTime;
 
-    printProgressString(prog.steps[m_currentStep].time * 1000, m_stepExecutor.passedTime(), 2);
-    printProgressString(m_totalTime, passedTime, 3);
+    printProgressString(m_stepExecutor.stepTime(), m_stepExecutor.passedTime(), 2);
 
     char formatedTime[7];
     switch (m_view) {
     case View::PassedTime:
         formatTime(m_stepExecutor.passedTime() / 1000, formatedTime);
         gDisplay[2] >> formatedTime;
+        break;
+    case View::RestTime:
+        formatTime((m_stepExecutor.stepTime() - m_stepExecutor.passedTime()) / 1000, formatedTime);
+        gDisplay[2] >> formatedTime;
+        break;
+    case View::last_:
+        MyAssert(false);
+    }
 
+    if (m_phase == Phase::OnAbort)
+        return;
+
+    printProgressString(m_totalTime, passedTime, 3);
+
+    switch (m_view) {
+    case View::PassedTime:
         formatTime(passedTime / 1000, formatedTime);
         gDisplay[3] >> formatedTime;
         break;
     case View::RestTime:
-        formatTime((prog.steps[m_currentStep].time * 1000 - m_stepExecutor.passedTime()) / 1000, formatedTime);
-        gDisplay[2] >> formatedTime;
-
         formatTime((m_totalTime - passedTime) / 1000, formatedTime);
         gDisplay[3] >> formatedTime;
         break;
