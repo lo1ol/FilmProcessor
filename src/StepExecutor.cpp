@@ -24,39 +24,10 @@ void stopUnLoadChem(uint8_t valvePin) {
 } // namespace
 
 StepExecutor::StepExecutor(const ProgDesc::Step& step) {
-    switch (step.action) {
-    case ProgDesc::Action::Dev:
-        m_targetValve = DEV_VALVE;
-        m_waste = false;
-        break;
-    case ProgDesc::Action::Bleach:
-        m_targetValve = BLEACH_VALVE;
-        m_waste = false;
-        break;
-    case ProgDesc::Action::Fix:
-        m_targetValve = FIX_VALVE;
-        m_waste = false;
-        break;
-    case ProgDesc::Action::ExtraBath:
-    case ProgDesc::Action::Dev2:
-        m_targetValve = EXTRA_VALVE;
-        m_waste = false;
-        break;
-    case ProgDesc::Action::Wash:
-        m_targetValve = WATER_VALVE;
-        m_waste = true;
-        break;
-    case ProgDesc::Action::Wait:
-    case ProgDesc::Action::Finish:
-    case ProgDesc::Action::last_:
-        MyAssert(false);
-        break;
-    }
-
     m_stepTime = step.time * 1000;
 }
 
-void StepExecutor::tick() {
+void ChemStepExecutor::tick() {
     uint32_t currentTime = millis() - m_startTime;
     switch (m_phase) {
     case Phase::NotStarted:
@@ -73,10 +44,8 @@ void StepExecutor::tick() {
     case Phase::Execute:
         if (currentTime + CHEM_LOAD_TIME < m_stepTime)
             break;
-        if (m_waste)
-            startUnLoadChem(WASTE_VALVE);
-        else
-            startUnLoadChem(m_targetValve);
+
+        startUnLoadChem(m_targetValve);
         m_phase = Phase::UnloadChem;
         break;
     case Phase::UnloadChem:
@@ -84,10 +53,7 @@ void StepExecutor::tick() {
         if (currentTime < m_stepTime)
             break;
 
-        if (m_waste)
-            stopUnLoadChem(WASTE_VALVE);
-        else
-            stopUnLoadChem(m_targetValve);
+        stopUnLoadChem(m_targetValve);
         m_phase = Phase::Finished;
         break;
     case Phase::Finished:
@@ -102,7 +68,33 @@ uint32_t StepExecutor::passedTime() const {
     return millis() - m_startTime;
 }
 
-void StepExecutor::abort() {
+ChemStepExecutor::ChemStepExecutor(const ProgDesc::Step& step) : StepExecutor(step) {
+    switch (step.action) {
+    case ProgDesc::Action::Dev:
+        m_targetValve = DEV_VALVE;
+        break;
+    case ProgDesc::Action::Bleach:
+        m_targetValve = BLEACH_VALVE;
+        break;
+    case ProgDesc::Action::Fix:
+        m_targetValve = FIX_VALVE;
+        break;
+    case ProgDesc::Action::ExtraBath:
+    case ProgDesc::Action::Dev2:
+        m_targetValve = EXTRA_VALVE;
+        break;
+    case ProgDesc::Action::Wash:
+    case ProgDesc::Action::Wait:
+    case ProgDesc::Action::Finish:
+    case ProgDesc::Action::last_:
+        MyAssert(false);
+        break;
+    }
+
+    m_stepTime = step.time * 1000;
+}
+
+void ChemStepExecutor::abort() {
     uint32_t currentTime = millis() - m_startTime;
     switch (m_phase) {
     case Phase::NotStarted:
@@ -123,5 +115,6 @@ void StepExecutor::abort() {
     }
 
     m_startTime = millis();
+    startUnLoadChem(m_targetValve);
     m_phase = Phase::Abort;
 }

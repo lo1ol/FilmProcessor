@@ -37,6 +37,10 @@ ProcessExecutor::ProcessExecutor() {
     m_totalTime *= 1000;
     updateStep();
 }
+ProcessExecutor::~ProcessExecutor() {
+    if (m_stepExecutor)
+        delete m_stepExecutor;
+}
 
 void ProcessExecutor::tick() {
     switch (m_phase) {
@@ -53,7 +57,7 @@ void ProcessExecutor::tick() {
             break;
 
         if (m_confirmAsker.result()) {
-            m_stepExecutor.abort();
+            m_stepExecutor->abort();
             m_phase = Phase::OnAbort;
         } else {
             m_phase = Phase::Normal;
@@ -73,14 +77,14 @@ void ProcessExecutor::tick() {
         return;
     }
 
-    m_stepExecutor.tick();
+    m_stepExecutor->tick();
 
     if (gBackBtn.click() && m_phase == Phase::Normal) {
         m_phase = Phase::OnBack;
         m_confirmAsker = ConfirmAsker("Wonna stop?");
     }
 
-    if (!m_stepExecutor.finished())
+    if (!m_stepExecutor->finished())
         return;
 
     if (m_phase == Phase::OnAbort) {
@@ -100,16 +104,16 @@ void ProcessExecutor::printProgressInfo() const {
     else
         gDisplay[1] << "Step: " << prog.getStepName(m_currentStep);
 
-    printProgressString(m_stepExecutor.stepTime(), m_stepExecutor.passedTime(), 2);
+    printProgressString(m_stepExecutor->stepTime(), m_stepExecutor->passedTime(), 2);
 
     char formatedTime[7];
     switch (m_view) {
     case View::PassedTime:
-        formatTime(m_stepExecutor.passedTime() / 1000, formatedTime);
+        formatTime(m_stepExecutor->passedTime() / 1000, formatedTime);
         gDisplay[2] >> formatedTime;
         break;
     case View::RestTime:
-        formatTime((m_stepExecutor.stepTime() - m_stepExecutor.passedTime()) / 1000, formatedTime);
+        formatTime((m_stepExecutor->stepTime() - m_stepExecutor->passedTime()) / 1000, formatedTime);
         gDisplay[2] >> formatedTime;
         break;
     case View::last_:
@@ -119,7 +123,7 @@ void ProcessExecutor::printProgressInfo() const {
     if (m_phase == Phase::OnAbort)
         return;
 
-    auto passedTime = m_prevStepsTime + m_stepExecutor.passedTime();
+    auto passedTime = m_prevStepsTime + m_stepExecutor->passedTime();
     printProgressString(m_totalTime, passedTime, 3);
 
     switch (m_view) {
@@ -148,6 +152,11 @@ void ProcessExecutor::nextStep() {
 void ProcessExecutor::updateStep() {
     const auto& step = gMemory.getProg().steps[m_currentStep];
 
+    if (m_stepExecutor) {
+        delete m_stepExecutor;
+        m_stepExecutor = nullptr;
+    }
+
     switch (step.action) {
     case ProgDesc::Action::Finish:
         m_confirmAsker = ConfirmAsker("Finish!", ConfirmAsker::Type::ClickConfirm);
@@ -163,7 +172,7 @@ void ProcessExecutor::updateStep() {
     case ProgDesc::Action::Dev2:
     case ProgDesc::Action::ExtraBath:
     case ProgDesc::Action::Wash:
-        m_stepExecutor = StepExecutor(step);
+        m_stepExecutor = new ChemStepExecutor(step);
         m_phase = Phase::Normal;
         break;
     case ProgDesc::Action::last_:

@@ -9,6 +9,7 @@ namespace Menu {
 class ProcessExecutor : public BaseMenu {
 public:
     ProcessExecutor();
+    ~ProcessExecutor();
     void tick() override;
 
 private:
@@ -26,7 +27,7 @@ private:
         OnAbort,
     };
 
-    StepExecutor m_stepExecutor;
+    StepExecutor* m_stepExecutor = nullptr;
     uint32_t m_totalTime = 0;
     uint32_t m_prevStepsTime = 0;
     uint8_t m_currentStep = 0;
