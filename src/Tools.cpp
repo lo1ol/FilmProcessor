@@ -10,6 +10,7 @@ EncButton gEncoder(ENCODER_DT, ENCODER_CLK);
 ButtonT<MODE_SWITCH_BTN> gModeSwitchBtn;
 ButtonT<BACK_BTN> gBackBtn;
 Memory gMemory;
+Rotator gRotator;
 
 void isr() {
     gEncoder.tickISR();

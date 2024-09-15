@@ -18,6 +18,8 @@
 #define ENCODER_DT 6
 #define ENCODER_CLK 7
 
+#define SERVO 9
+
 #define DEV_VALVE A2
 #define BLEACH_VALVE A3
 #define FIX_VALVE A4

@@ -18,6 +18,7 @@ ProcessExecutor::ProcessExecutor() {
 ProcessExecutor::~ProcessExecutor() {
     if (m_stepExecutor)
         delete m_stepExecutor;
+    gRotator.stop();
 }
 
 void ProcessExecutor::tick() {
@@ -113,10 +114,12 @@ void ProcessExecutor::updateStep() {
 
     switch (step.action) {
     case ProgDesc::Action::Finish:
+        gRotator.stop();
         m_confirmAsker = ConfirmAsker("Finish!", ConfirmAsker::Type::ClickConfirm);
         m_phase = Phase::OnFinish;
         break;
     case ProgDesc::Action::Wait:
+        gRotator.stop();
         m_confirmAsker = ConfirmAsker("Wait for actions", ConfirmAsker::Type::HoldConfirm);
         m_phase = Phase::OnWait;
         m_needCleanTube = true;
@@ -126,11 +129,13 @@ void ProcessExecutor::updateStep() {
     case ProgDesc::Action::Fix:
     case ProgDesc::Action::Dev2:
     case ProgDesc::Action::ExtraBath:
+        gRotator.start();
         m_stepExecutor = new ChemStepExecutor(step, m_needCleanTube);
         m_phase = Phase::Normal;
         m_needCleanTube = false;
         break;
     case ProgDesc::Action::Wash:
+        gRotator.start();
         m_stepExecutor = new WashStepExecutor(step, m_needCleanTube);
         m_phase = Phase::Normal;
         m_needCleanTube = false;

@@ -3,6 +3,7 @@
 #include "App.h"
 #include "Display.h"
 #include "Memory.h"
+#include "Rotator.h"
 #include "SafeEncButton.h"
 
 #define ADD_TO_ENUM(enumName, current, num) \
@@ -25,3 +26,4 @@ extern ButtonT<MODE_SWITCH_BTN> gModeSwitchBtn;
 extern ButtonT<BACK_BTN> gBackBtn;
 extern Display gDisplay;
 extern Memory gMemory;
+extern Rotator gRotator;

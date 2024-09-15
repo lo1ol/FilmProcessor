@@ -30,6 +30,7 @@ void setup() {
 }
 
 void loop() {
+    gRotator.tick();
     gEncoder.tick();
     gDisplay.tick();
     gModeSwitchBtn.tick();

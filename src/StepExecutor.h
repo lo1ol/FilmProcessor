@@ -57,9 +57,10 @@ public:
     void abort() override;
 
 private:
-    ChemStepExecutor getPhaseWasher(uint32_t time, bool needCleanTube = false);
+    ChemStepExecutor getPhaseWasher(uint16_t time, bool needCleanTube = false);
 
     ChemStepExecutor m_phaseWasher;
     bool m_finished = false;
     bool m_aborted = false;
+    uint16_t m_restTime;
 };

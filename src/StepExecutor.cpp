@@ -37,7 +37,6 @@ uint32_t StepExecutor::passedTime() const {
 void StepExecutor::tick() {
     if (!m_startTime) {
         m_startTime = millis();
-        return;
     }
 
     m_passedTime = millis() - m_startTime;
@@ -160,7 +159,9 @@ void ChemStepExecutor::abort() {
 }
 
 WashStepExecutor::WashStepExecutor(const ProgDesc::Step& step, bool needCleanTube)
-    : StepExecutor(step), m_phaseWasher(getPhaseWasher(step.time * 1000, needCleanTube)) {}
+    : StepExecutor(step), m_phaseWasher(getPhaseWasher(step.time, needCleanTube)) {
+    m_restTime = step.time - m_phaseWasher.stepTime() / 1000;
+}
 
 void WashStepExecutor::tick() {
     StepExecutor::tick();
@@ -169,12 +170,13 @@ void WashStepExecutor::tick() {
 
     m_phaseWasher.tick();
     if (m_phaseWasher.finished()) {
-        if (m_aborted || m_passedTime >= m_stepTime) {
+        if (m_aborted || !m_restTime) {
             m_finished = true;
             return;
         }
 
-        m_phaseWasher = getPhaseWasher(m_stepTime - m_passedTime);
+        m_phaseWasher = getPhaseWasher(m_restTime);
+        m_restTime -= m_phaseWasher.stepTime() / 1000;
     }
 }
 
@@ -189,12 +191,12 @@ void WashStepExecutor::abort() {
     m_passedTime = m_phaseWasher.passedTime();
 }
 
-ChemStepExecutor WashStepExecutor::getPhaseWasher(uint32_t time, bool needCleanTube) {
+ChemStepExecutor WashStepExecutor::getPhaseWasher(uint16_t time, bool needCleanTube) {
     ProgDesc::Step step{ .action = ProgDesc::Action::Wash };
-    if (time >= 4 * CHEM_LOAD_TIME + PURE_WASH_TIME * 2)
+    if (time * 1000L >= 4 * CHEM_LOAD_TIME + PURE_WASH_TIME * 2)
         step.time = (2 * CHEM_LOAD_TIME + PURE_WASH_TIME) / 1000;
     else
-        step.time = lround(time / 1000.);
+        step.time = time;
 
     return ChemStepExecutor(step, needCleanTube);
 }
