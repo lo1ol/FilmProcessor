@@ -4,22 +4,27 @@
 
 #include "Config.h"
 #include "MyAssert.h"
+#include "Tools.h"
 
 namespace {
 void startLoadChem(uint8_t valvePin) {
     digitalWrite(valvePin, HIGH);
+    gPump.loadInTank();
 }
 
 void stopLoadChem(uint8_t valvePin) {
     digitalWrite(valvePin, LOW);
+    gPump.stop();
 }
 
 void startUnLoadChem(uint8_t valvePin) {
     digitalWrite(valvePin, HIGH);
+    gPump.loadOutTank();
 }
 
 void stopUnLoadChem(uint8_t valvePin) {
     digitalWrite(valvePin, LOW);
+    gPump.stop();
 }
 } // namespace
 

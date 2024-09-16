@@ -20,6 +20,9 @@
 
 #define SERVO 9
 
+#define PUMP_IN1 8
+#define PUMP_IN2 10
+
 #define DEV_VALVE A2
 #define BLEACH_VALVE A3
 #define FIX_VALVE A4

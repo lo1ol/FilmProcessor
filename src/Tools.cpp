@@ -11,6 +11,7 @@ ButtonT<MODE_SWITCH_BTN> gModeSwitchBtn;
 ButtonT<BACK_BTN> gBackBtn;
 Memory gMemory;
 Rotator gRotator;
+Pump gPump;
 
 void isr() {
     gEncoder.tickISR();

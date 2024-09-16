@@ -44,11 +44,12 @@ void MachineCleaner::tick() {
     case Phase::LoadTank:
         m_startTime = millis();
         digitalWrite(WATER_VALVE, HIGH);
-        // TODO start pump
+        gPump.loadInTank();
         phaseTime = CLEAN_BATH_TIME;
         m_stepName = "Clean tank";
         break;
     case Phase::LoadExtra:
+        gPump.stop();
         loadStage(0, EXTRA_VALVE, "Clean extra bath");
         break;
     case Phase::UnLoadExtra:
@@ -73,12 +74,12 @@ void MachineCleaner::tick() {
         unloadStage(FIX_VALVE);
         break;
     case Phase::CleanTube:
-        // TODO start reverse pump
+        gPump.loadOutTank();
         phaseTime = CLEAN_TUBES_TIME;
         m_stepName = "Clean tubes";
         break;
     case Phase::Finish:
-        // TODO stop reverse pump
+        gPump.stop();
         digitalWrite(WASTE_VALVE, LOW);
         m_finish = true;
         phaseTime = 0;
