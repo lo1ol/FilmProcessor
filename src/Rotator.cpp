@@ -4,6 +4,11 @@
 
 #include "Config.h"
 
+#define DEAD_LEFT 60
+#define DEAD_RIGHT 130
+#define MAX_LEFT 30
+#define MAX_RIGHT 156
+
 void Rotator::start() {
     if (m_phase == Phase::Stop)
         m_servo.attach(SERVO);
@@ -29,26 +34,26 @@ void Rotator::tick() {
     if (millis() < m_timer)
         return;
 
-    if (m_pos == 88 && m_shift == 1)
-        m_pos = 99;
-    else if (m_pos == 99 && m_shift == -1)
-        m_pos = 88;
+    if (m_pos == DEAD_LEFT && m_shift == 1)
+        m_pos = DEAD_RIGHT;
+    else if (m_pos == DEAD_RIGHT && m_shift == -1)
+        m_pos = DEAD_LEFT;
     else
         m_pos += m_shift;
 
-    uint16_t posTime = 50;
-    if (m_pos == 126) {
-        m_shift = -1;
-        posTime = 1000;
-    }
-    if (m_pos == 60) {
+    uint16_t posTime = 20;
+    if (m_pos == MAX_LEFT) {
         m_shift = 1;
-        posTime = 1000;
+        posTime = 3000;
+    }
+    if (m_pos == MAX_RIGHT) {
+        m_shift = -1;
+        posTime = 3000;
     }
 
     m_servo.write(m_pos);
 
-    if ((m_pos == 99 || m_pos == 88) && m_phase == Phase::OnStop) {
+    if ((m_pos == DEAD_RIGHT || m_pos == DEAD_LEFT) && m_phase == Phase::OnStop) {
         m_servo.detach();
         m_phase = Phase::Stop;
         return;
