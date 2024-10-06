@@ -54,7 +54,7 @@ void StepExecutor::start() {
 }
 
 ChemStepExecutor::ChemStepExecutor(const ProgDesc::Step& step, bool needCleanTubes)
-    : StepExecutor(step), m_phase(needCleanTubes ? Phase::CleanTube : Phase::NotStarted) {
+    : StepExecutor(step), m_phase(needCleanTubes ? Phase::StartCleanTube : Phase::NotStarted) {
     switch (step.action) {
     case ProgDesc::Action::Dev:
         m_targetValve = DEV_VALVE;
@@ -90,8 +90,11 @@ ChemStepExecutor::ChemStepExecutor(const ProgDesc::Step& step, bool needCleanTub
 void ChemStepExecutor::tick() {
     StepExecutor::tick();
     switch (m_phase) {
-    case Phase::CleanTube:
+    case Phase::StartCleanTube:
         startUnLoadChem(WASTE_VALVE);
+        m_phase = Phase::CleanTube;
+        break;
+    case Phase::CleanTube:
         if (m_passedTime < CLEAN_TUBES_TIME)
             break;
         stopUnLoadChem(WASTE_VALVE);
@@ -136,6 +139,7 @@ void ChemStepExecutor::tick() {
 
 void ChemStepExecutor::abort() {
     switch (m_phase) {
+    case Phase::StartCleanTube:
     case Phase::CleanTube:
     case Phase::NotStarted:
         m_stepTime = 0;

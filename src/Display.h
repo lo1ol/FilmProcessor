@@ -23,8 +23,12 @@ public:
     void tick();
     void reset();
     void resetBlink(bool state = false, uint16_t blinkSpeed = 500);
+    void reinitDisplay() { m_reinitFlag = true; }
 
 private:
+    void reinitDisplay_();
+
     LiquidCrystal m_lcd;
     DisplayLine m_lines[DISPLAY_ROWS];
+    bool m_reinitFlag = true;
 };

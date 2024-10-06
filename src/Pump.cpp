@@ -3,23 +3,30 @@
 #include <Arduino.h>
 
 #include "Config.h"
+#include "Tools.h"
 
 Pump::Pump() {
-    pinMode(PUMP_IN1, OUTPUT);
-    pinMode(PUMP_IN2, OUTPUT);
+    pinMode(PUMP_FOR, OUTPUT);
+    pinMode(PUMP_REV, OUTPUT);
 }
 
 void Pump::loadInTank() {
-    digitalWrite(PUMP_IN1, LOW);
-    digitalWrite(PUMP_IN2, HIGH);
+    digitalWrite(PUMP_FOR, HIGH);
+    digitalWrite(PUMP_REV, LOW);
+    delay(10);
+    gDisplay.reinitDisplay();
 }
 
 void Pump::loadOutTank() {
-    digitalWrite(PUMP_IN1, HIGH);
-    digitalWrite(PUMP_IN2, LOW);
+    digitalWrite(PUMP_FOR, LOW);
+    digitalWrite(PUMP_REV, HIGH);
+    delay(10);
+    gDisplay.reinitDisplay();
 }
 
 void Pump::stop() {
-    digitalWrite(PUMP_IN1, LOW);
-    digitalWrite(PUMP_IN2, LOW);
+    digitalWrite(PUMP_FOR, LOW);
+    digitalWrite(PUMP_REV, LOW);
+    delay(10);
+    gDisplay.reinitDisplay();
 }

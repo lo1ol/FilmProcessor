@@ -6,8 +6,8 @@
 
 #define DEAD_LEFT 60
 #define DEAD_RIGHT 130
-#define MAX_LEFT 30
-#define MAX_RIGHT 156
+#define MAX_LEFT 59
+#define MAX_RIGHT 131
 
 void Rotator::start() {
     if (m_phase == Phase::Stop)

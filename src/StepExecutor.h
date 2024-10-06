@@ -34,6 +34,7 @@ public:
 
 private:
     enum class Phase : uint8_t {
+        StartCleanTube,
         CleanTube,
         NotStarted,
         LoadChem,

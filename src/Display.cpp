@@ -17,8 +17,15 @@ uint8_t kLoad5Char[] = { 0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0b11111, 0
 
 Display::Display(LiquidCrystal&& lcd)
     : m_lcd(lcd)
-    , m_lines({ DisplayLine(0, m_lcd), DisplayLine(1, m_lcd), DisplayLine(2, m_lcd), DisplayLine(3, m_lcd) }) {
+    , m_lines({ DisplayLine(0, m_lcd), DisplayLine(1, m_lcd), DisplayLine(2, m_lcd), DisplayLine(3, m_lcd) }) {}
+
+void Display::reinitDisplay_() {
+    if (!m_reinitFlag)
+        return;
+    m_reinitFlag = false;
+
     m_lcd.begin(DISPLAY_COLS, DISPLAY_ROWS);
+
     m_lcd.createChar(kAcceptSymbol, kAcceptChar);
     m_lcd.createChar(kBackSymbol, kBackChar);
     m_lcd.createChar(kLoad0Symbol, kLoad0Char);
@@ -30,6 +37,8 @@ Display::Display(LiquidCrystal&& lcd)
 }
 
 void Display::tick() {
+    reinitDisplay_();
+
     for (auto&& line : m_lines)
         line.tick();
 }

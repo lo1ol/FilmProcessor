@@ -20,15 +20,15 @@
 
 #define SERVO 9
 
-#define PUMP_IN1 8
-#define PUMP_IN2 10
+#define PUMP_FOR A10
+#define PUMP_REV A11
 
 #define DEV_VALVE A2
 #define BLEACH_VALVE A3
 #define FIX_VALVE A4
 #define EXTRA_VALVE A5
-#define WATER_VALVE A6
-#define WASTE_VALVE A6
+#define WATER_VALVE A9
+#define WASTE_VALVE A7
 
 #define CHEM_LOAD_TIME 10000L
 #define PURE_WASH_TIME 15000L
