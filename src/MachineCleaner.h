@@ -10,7 +10,7 @@ public:
 
     void tick();
 
-    static constexpr uint32_t totalTime() { return 5 * CLEAN_BATH_TIME + 4 * FREE_BATH_TIME + CLEAN_TUBES_TIME; }
+    static constexpr uint32_t totalTime() { return 5 * CLEAN_BATH_TIME + 4 * FREE_BATH_TIME + POST_CLEAN_TUBES_TIME; }
     uint32_t passedTime() const;
     bool finish() const { return m_finish; }
     const char* stepName() const { return m_stepName; }

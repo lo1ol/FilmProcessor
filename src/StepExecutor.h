@@ -34,12 +34,14 @@ public:
 
 private:
     enum class Phase : uint8_t {
-        StartCleanTube,
-        CleanTube,
-        NotStarted,
+        StartPreCleanTube,
+        PreCleanTube,
+        StartLoadChem,
         LoadChem,
         Execute,
         UnloadChem,
+        StartPostCleanTube,
+        PostCleanTube,
         Finished,
         Abort,
     };
@@ -51,7 +53,7 @@ private:
 
 class WashStepExecutor : public StepExecutor {
 public:
-    WashStepExecutor(const ProgDesc::Step& step, bool needCleanTube);
+    WashStepExecutor(const ProgDesc::Step& step, bool needPreCleanTube);
 
     void tick() override;
     bool finished() const override { return m_finished; }

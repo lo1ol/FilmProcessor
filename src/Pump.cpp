@@ -13,20 +13,20 @@ Pump::Pump() {
 void Pump::loadInTank() {
     digitalWrite(PUMP_FOR, HIGH);
     digitalWrite(PUMP_REV, LOW);
-    delay(10);
-    gDisplay.reinitDisplay();
+    //delay(10);
+    //gDisplay.reinitDisplay();
 }
 
 void Pump::loadOutTank() {
     digitalWrite(PUMP_FOR, LOW);
     digitalWrite(PUMP_REV, HIGH);
-    delay(10);
-    gDisplay.reinitDisplay();
+    //delay(10);
+    //gDisplay.reinitDisplay();
 }
 
 void Pump::stop() {
     digitalWrite(PUMP_FOR, LOW);
     digitalWrite(PUMP_REV, LOW);
-    delay(10);
-    gDisplay.reinitDisplay();
+    //delay(10);
+    //gDisplay.reinitDisplay();
 }

@@ -75,7 +75,7 @@ void MachineCleaner::tick() {
         break;
     case Phase::CleanTube:
         gPump.loadOutTank();
-        phaseTime = CLEAN_TUBES_TIME;
+        phaseTime = POST_CLEAN_TUBES_TIME;
         m_stepName = "Clean tubes";
         break;
     case Phase::Finish:
