@@ -60,7 +60,7 @@ void ProcessExecutor::tick() {
 
     if (gBackBtn.click() && m_phase == Phase::Normal) {
         m_phase = Phase::OnBack;
-        m_confirmAsker = ConfirmAsker("Wonna stop?");
+        m_confirmAsker = ConfirmAsker("Abort process");
     }
 
     if (!m_stepExecutor->finished())
@@ -115,12 +115,12 @@ void ProcessExecutor::updateStep() {
     switch (step.action) {
     case ProgDesc::Action::Finish:
         gRotator.stop();
-        m_confirmAsker = ConfirmAsker("Finish!", ConfirmAsker::Type::ClickConfirm);
+        m_confirmAsker = ConfirmAsker("Finish!", "", ConfirmAsker::Type::ClickConfirm);
         m_phase = Phase::OnFinish;
         break;
     case ProgDesc::Action::Wait:
         gRotator.stop();
-        m_confirmAsker = ConfirmAsker("Wait for actions", ConfirmAsker::Type::HoldConfirm);
+        m_confirmAsker = ConfirmAsker("Wait for actions", "", ConfirmAsker::Type::HoldConfirm);
         m_phase = Phase::OnWait;
         m_needCleanTube = true;
         break;

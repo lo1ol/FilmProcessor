@@ -40,12 +40,16 @@ const char* ProcessMenu::getActionName(Action action) {
 }
 
 void ProcessMenu::tick() {
-    if (m_onCreateNew) {
-        m_stringAsker.tick();
+    if (gBackBtn.click()) {
+        if (m_phase == Phase::OnChoose)
+            gApp.setMenu(new ProcessList(gMemory.progId()));
+        else
+            m_phase = Phase::OnChoose;
+        return;
+    }
 
-        if (gBackBtn.click()) {
-            m_onCreateNew = false;
-        }
+    if (m_phase == Phase::OnCreateNew) {
+        m_stringAsker.tick();
 
         if (m_stringAsker.finish()) {
             ProgDesc newProg;
@@ -59,14 +63,18 @@ void ProcessMenu::tick() {
         return;
     }
 
-    if (m_onDelete) {
+    if (m_phase == Phase::OnDelete || m_phase == Phase::OnProcessRun) {
         m_conirmAsker.tick();
         if (m_conirmAsker.finish()) {
             if (m_conirmAsker.result()) {
-                gMemory.deleteProg();
-                gApp.setMenu(new ProcessList());
+                if (m_phase == Phase::OnDelete) {
+                    gMemory.deleteProg();
+                    gApp.setMenu(new ProcessList());
+                } else {
+                    gApp.setMenu(new ProcessExecutor());
+                }
             } else {
-                m_onDelete = false;
+                m_phase = Phase::OnChoose;
             }
         }
         return;
@@ -84,24 +92,20 @@ void ProcessMenu::tick() {
             gApp.setMenu(new ProcessEdit());
             return;
         case Action::CreateBasedOn:
-            m_onCreateNew = true;
+            m_phase = Phase::OnCreateNew;
             m_stringAsker = StringAsker("Name: ", gMemory.getProg().name);
             return;
         case Action::Delete:
-            m_onDelete = true;
-            m_conirmAsker = ConfirmAsker();
+            m_phase = Phase::OnDelete;
+            m_conirmAsker = ConfirmAsker("Delete process");
             return;
         case Action::Process:
-            gApp.setMenu(new ProcessExecutor());
+            m_phase = Phase::OnProcessRun;
+            m_conirmAsker = ConfirmAsker("Run process");
             return;
         case Action::last_:
             MyAssert(false);
         }
-    }
-
-    if (gBackBtn.click()) {
-        gApp.setMenu(new ProcessList(gMemory.progId()));
-        return;
     }
 }
 

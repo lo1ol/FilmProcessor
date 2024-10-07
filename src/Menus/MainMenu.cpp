@@ -34,6 +34,23 @@ const char* MainMenu::getActionName(Action action) {
 }
 
 void MainMenu::tick() {
+    if (gBackBtn.click() && m_phase != Phase::OnChoose) {
+        m_phase = Phase::OnChoose;
+        return;
+    }
+
+    if (m_phase == Phase::OnCleanMachine) {
+        m_conirmAsker.tick();
+        if (m_conirmAsker.finish()) {
+            if (m_conirmAsker.result())
+                gApp.setMenu(new MachineClean());
+            else
+                m_phase = Phase::OnChoose;
+        }
+        return;
+    }
+
+
     m_listSelector.shift(getEncoderDir());
     m_listSelector.tick();
 
@@ -43,7 +60,8 @@ void MainMenu::tick() {
             gApp.setMenu(new ProcessList());
             return;
         case Action::CleanMachine:
-            gApp.setMenu(new MachineClean());
+            m_phase = Phase::OnCleanMachine;
+            m_conirmAsker = ConfirmAsker("Clean machine");
             return;
         case Action::last_:
             MyAssert(false);

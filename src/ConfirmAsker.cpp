@@ -4,7 +4,7 @@
 
 #include "Tools.h"
 
-ConfirmAsker::ConfirmAsker(const char* greeting, Type type) : m_greeting(greeting), m_type(type) {}
+ConfirmAsker::ConfirmAsker(const char* greeting, const char* question, Type type) : m_greeting(greeting), m_question(question), m_type(type) {}
 
 void ConfirmAsker::tick() {
     auto shift = getEncoderDir();
@@ -28,6 +28,7 @@ void ConfirmAsker::tick() {
             m_finish = true;
         break;
     case Type::YesNo:
+        gDisplay[1] << m_question;
         gDisplay[3] << "   ";
         if (!m_result)
             gDisplay[3].printBlink("No");

@@ -15,12 +15,12 @@ public:
 
 private:
     enum class Action : uint8_t { Process, View, Edit, CreateBasedOn, Delete, last_ };
+    enum class Phase : uint8_t { OnChoose, OnDelete, OnCreateNew, OnProcessRun };
 
     static const char* getActionName(Action);
 
     ListSelector m_listSelector;
-    bool m_onCreateNew = false;
-    bool m_onDelete = false;
+    Phase m_phase = Phase::OnChoose;
     StringAsker m_stringAsker;
     ConfirmAsker m_conirmAsker;
 };

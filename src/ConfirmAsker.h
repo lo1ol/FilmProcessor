@@ -10,7 +10,7 @@ public:
         HoldConfirm,
     };
 
-    ConfirmAsker(const char* greeting = "Are you sure?", Type type = Type::YesNo);
+    ConfirmAsker(const char* greeting = "", const char* question = "Are you sure?", Type type = Type::YesNo);
     bool finish() const { return m_finish; }
     bool result() const { return m_result; }
 
@@ -18,6 +18,7 @@ public:
 
 public:
     const char* m_greeting;
+    const char* m_question;
     Type m_type;
     bool m_finish = false;
     bool m_result = false;
