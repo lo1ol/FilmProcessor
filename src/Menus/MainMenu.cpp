@@ -50,7 +50,6 @@ void MainMenu::tick() {
         return;
     }
 
-
     m_listSelector.shift(getEncoderDir());
     m_listSelector.tick();
 

@@ -56,7 +56,7 @@ bool getTime(uint16_t& time) {
     sTime = (sTime / factor) * factor;
 
     if (sTime < (CHEM_LOAD_TIME * 2 + POST_CLEAN_TUBES_TIME) / 1000)
-        sTime = (CHEM_LOAD_TIME * 2 + POST_CLEAN_TUBES_TIME)/ 1000;
+        sTime = (CHEM_LOAD_TIME * 2 + POST_CLEAN_TUBES_TIME) / 1000;
 
     if (sTime > 60 * 60)
         sTime = 60 * 60;

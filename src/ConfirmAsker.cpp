@@ -4,7 +4,8 @@
 
 #include "Tools.h"
 
-ConfirmAsker::ConfirmAsker(const char* greeting, const char* question, Type type) : m_greeting(greeting), m_question(question), m_type(type) {}
+ConfirmAsker::ConfirmAsker(const char* greeting, const char* question, Type type)
+    : m_greeting(greeting), m_question(question), m_type(type) {}
 
 void ConfirmAsker::tick() {
     auto shift = getEncoderDir();
