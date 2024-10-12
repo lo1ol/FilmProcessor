@@ -13,7 +13,7 @@ public:
 private:
     enum class Phase { Stop, Run, OnStop };
 
-    uint8_t m_pos = 90;
+    int16_t m_pos = 90;
     int8_t m_shift = 1;
     Servo m_servo;
     Phase m_phase = Phase::Stop;

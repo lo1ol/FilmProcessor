@@ -18,10 +18,10 @@
 #define ENCODER_DT 6
 #define ENCODER_CLK 7
 
-#define SERVO 9
+#define SERVO 10
 
-#define PUMP_FOR A10
-#define PUMP_REV A11
+#define PUMP_FOR A14
+#define PUMP_REV A15
 
 #define DEV_VALVE A2
 #define BLEACH_VALVE A3
