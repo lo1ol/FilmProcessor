@@ -117,12 +117,14 @@ void ProcessExecutor::updateStep() {
         gRotator.stop();
         m_confirmAsker = ConfirmAsker("Finish!", "", ConfirmAsker::Type::ClickConfirm);
         m_phase = Phase::OnFinish;
+        gMelodyPlayer.start();
         break;
     case ProgDesc::Action::Wait:
         gRotator.stop();
         m_confirmAsker = ConfirmAsker("Wait for actions", "", ConfirmAsker::Type::HoldConfirm);
         m_phase = Phase::OnWait;
         m_needCleanTube = true;
+        gMelodyPlayer.start();
         break;
     case ProgDesc::Action::Dev:
     case ProgDesc::Action::Bleach:

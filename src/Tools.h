@@ -2,6 +2,7 @@
 
 #include "App.h"
 #include "Display.h"
+#include "MelodyPlayer.h"
 #include "Memory.h"
 #include "Pump.h"
 #include "Rotator.h"
@@ -29,3 +30,4 @@ extern Display gDisplay;
 extern Memory gMemory;
 extern Rotator gRotator;
 extern Pump gPump;
+extern MelodyPlayer gMelodyPlayer;

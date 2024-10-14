@@ -18,6 +18,8 @@
 #define ENCODER_DT 6
 #define ENCODER_CLK 7
 
+#define BUZZER 9
+
 #define SERVO 10
 
 #define PUMP_FOR A14
@@ -28,7 +30,7 @@
 #define FIX_VALVE A4
 #define EXTRA_VALVE A5
 #define WATER_VALVE A9
-#define WASTE_VALVE A7
+#define WASTE_VALVE A13
 
 #define CHEM_LOAD_TIME 9000L
 #define PURE_WASH_TIME 15000L

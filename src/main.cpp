@@ -35,5 +35,6 @@ void loop() {
     gDisplay.tick();
     gModeSwitchBtn.tick();
     gBackBtn.tick();
+    gMelodyPlayer.tick();
     gApp.tick();
 }

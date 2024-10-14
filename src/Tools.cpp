@@ -12,6 +12,7 @@ ButtonT<BACK_BTN> gBackBtn;
 Memory gMemory;
 Rotator gRotator;
 Pump gPump;
+MelodyPlayer gMelodyPlayer;
 
 void isr() {
     gEncoder.tickISR();
