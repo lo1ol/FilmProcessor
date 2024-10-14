@@ -65,7 +65,8 @@ void StringAsker::tick() {
             if (resLen)
                 m_result[resLen - 1] = 0;
         } else if (choosenSym == kAcceptSymbol) {
-            m_finish = true;
+            if (resLen)
+                m_finish = true;
         } else if (resLen < 10) {
             if (choosenSym == '_')
                 choosenSym = ' ';

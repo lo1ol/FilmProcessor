@@ -4,6 +4,12 @@
 
 #include "MyAssert.h"
 
+ProgDesc::ProgDesc() {
+    name[0] = 0;
+    steps[0].action = Action::Finish;
+    steps[0].time = 0;
+}
+
 const char* ProgDesc::getActionName(Action action) {
     switch (action) {
     case Action::Dev:

@@ -2,6 +2,7 @@
 
 #include "../BaseMenu.h"
 #include "../ListSelector.h"
+#include "../StringAsker.h"
 
 namespace Menu {
 
@@ -11,7 +12,11 @@ public:
     void tick() override;
 
 private:
+    enum class Phase { OnChoose, OnAddNew };
+
+    Phase m_phase = Phase::OnChoose;
     ListSelector m_listSelector;
+    StringAsker m_stringAsker;
 };
 
 } // namespace Menu

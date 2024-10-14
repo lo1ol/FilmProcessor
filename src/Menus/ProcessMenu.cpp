@@ -57,6 +57,7 @@ void ProcessMenu::tick() {
 
             strcpy(newProg.name, m_stringAsker.result());
             gMemory.setProg(newProg);
+            gMemory.saveProg();
             gApp.setMenu(new ProcessEdit());
         }
 

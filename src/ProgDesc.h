@@ -6,7 +6,7 @@
 
 class ProgDesc {
 public:
-    ProgDesc() = default;
+    ProgDesc();
     ProgDesc(const ProgDesc&) = delete;
     ProgDesc(ProgDesc&&) = delete;
     ProgDesc& operator=(const ProgDesc&) = delete;
