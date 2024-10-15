@@ -100,16 +100,36 @@
 namespace {
 
 // https://github.com/hibit-dev/buzzer
-const Melody gMelodies[] = { {
-                                 "Simpsons",
-                                 { NOTE_C4,  NOTE_E4,  NOTE_FS4, REST,     NOTE_A4,  NOTE_G4, NOTE_E4,
-                                   NOTE_C4,  NOTE_A3,  NOTE_FS3, NOTE_FS3, NOTE_FS3, NOTE_G3, REST,
-                                   NOTE_FS3, NOTE_FS3, NOTE_FS3, NOTE_G3,  NOTE_AS3, NOTE_B3, REST },
-                                 { 2, 4, 4, 32, 8, 2, 4, 4, 8, 8, 8, 8, 4, 2, 8, 8, 8, 4, 2, 2, 2, 0 },
-                             },
-                             { "", { 0 }, { 0 } } };
+const uint16_t gSimpsonsNotes[] = { NOTE_C4,  NOTE_E4,  NOTE_FS4, REST,     NOTE_A4,  NOTE_G4, NOTE_E4,
+                                    NOTE_C4,  NOTE_A3,  NOTE_FS3, NOTE_FS3, NOTE_FS3, NOTE_G3, REST,
+                                    NOTE_FS3, NOTE_FS3, NOTE_FS3, NOTE_G3,  NOTE_AS3, NOTE_B3, REST };
+const uint8_t gSimpsonsDurations[] = { 2, 4, 4, 32, 8, 2, 4, 4, 8, 8, 8, 8, 4, 2, 8, 8, 8, 4, 2, 2, 2, 0 };
+
+const uint16_t gPacmanNotes[] = { NOTE_B4,  NOTE_B5,  NOTE_FS5, NOTE_DS5, NOTE_B5,  NOTE_FS5, NOTE_DS5, NOTE_C5,
+                                  NOTE_C6,  NOTE_G6,  NOTE_E6,  NOTE_C6,  NOTE_G6,  NOTE_E6,  NOTE_B4,  NOTE_B5,
+                                  NOTE_FS5, NOTE_DS5, NOTE_B5,  NOTE_FS5, NOTE_DS5, NOTE_DS5, NOTE_E5,  NOTE_F5,
+                                  NOTE_F5,  NOTE_FS5, NOTE_G5,  NOTE_G5,  NOTE_GS5, NOTE_A5,  NOTE_B5 };
+
+const uint8_t gPacmanDurations[] = { 16, 16, 16, 16, 32, 16, 8,  16, 16, 16, 16, 32, 16, 8,  16, 16,
+                                     16, 16, 32, 16, 8,  32, 32, 32, 32, 32, 32, 32, 32, 16, 8,  0 };
+
+const Melody gMelodies[] = {
+    { SongId::Simpsons, gSimpsonsNotes, gSimpsonsDurations },
+    { SongId::Pacman, gPacmanNotes, gPacmanDurations },
+};
 
 } // namespace
+
+const char* Melody::getSongName(SongId id) {
+    switch (id) {
+    case SongId::Simpsons:
+        return "Simpsons";
+    case SongId::Pacman:
+        return "Pacman";
+    default:
+        return "";
+    }
+}
 
 MelodyPlayer::MelodyPlayer() {
     m_melody = &gMelodies[0];
@@ -152,4 +172,13 @@ void MelodyPlayer::playPhase() {
     m_timer = millis() + duration * 1.3;
 
     tone(BUZZER, m_melody->notes[m_melodyPhase], duration);
+}
+
+void MelodyPlayer::setSong(SongId id) {
+    for (uint8_t i = 0; i < sizeof(gMelodies) / sizeof(gMelodies[0]); ++i) {
+        if (gMelodies[i].id != id)
+            continue;
+        m_melody = &gMelodies[i];
+        break;
+    }
 }

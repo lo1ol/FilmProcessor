@@ -2,16 +2,21 @@
 
 #include <stdint.h>
 
+enum class SongId : uint8_t { Simpsons, Pacman, last_ };
+
 class Melody {
 public:
-    const char* name;
-    int16_t notes[32];
-    int8_t durations[32];
+    static const char* getSongName(SongId);
+    SongId id;
+    const uint16_t* notes;
+    const uint8_t* durations;
 };
 
 class MelodyPlayer {
 public:
     MelodyPlayer();
+
+    void setSong(SongId);
 
     void start();
     void stop();

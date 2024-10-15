@@ -1,10 +1,14 @@
 #pragma once
 
 #include "ProgDesc.h"
+#include "Settings.h"
 
 class Memory {
 public:
     Memory();
+
+    Settings getSettings();
+    void saveSettings(Settings);
 
     uint8_t getProgNum() const;
     void getProg(uint8_t, ProgDesc&) const;

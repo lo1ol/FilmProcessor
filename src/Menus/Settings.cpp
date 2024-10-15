@@ -19,10 +19,9 @@ const char* Settings::getSettingName(Setting setting) {
 }
 
 const char* Settings::getSettingValue(Setting setting) {
-    // TODO
     switch (setting) {
     case Setting::Melody:
-        return "Simpsons";
+        return Melody::getSongName(m_settings.songId);
     case Setting::Agitation:
         return "Jobo";
     default:
@@ -30,11 +29,32 @@ const char* Settings::getSettingValue(Setting setting) {
     }
 }
 
+void Settings::changeValue(Setting setting, int8_t shift) {
+    gDisplay.resetBlink();
+
+    switch (setting) {
+    case Setting::Melody:
+        gMelodyPlayer.stop();
+        m_settings.songId = ADD_TO_ENUM(SongId, m_settings.songId, shift);
+        gMelodyPlayer.setSong(m_settings.songId);
+        gMelodyPlayer.start();
+        break;
+    case Setting::Agitation:
+        break;
+    case Setting::last_:
+        break;
+    }
+
+    gMemory.saveSettings(m_settings);
+    m_settings.applySettings();
+}
+
 Settings::Settings() {
+    m_settings = gMemory.getSettings();
     auto printer = [](void* ctx_, uint8_t id, uint8_t line) {
         auto ctx = reinterpret_cast<Settings*>(ctx_);
         const char* settingName = getSettingName(static_cast<Setting>(id));
-        const char* settingValue = getSettingValue(static_cast<Setting>(id));
+        const char* settingValue = ctx->getSettingValue(static_cast<Setting>(id));
         bool choosen = id == ctx->m_listSelector.pos();
 
         if (choosen && ctx->m_phase == Phase::OnChoose)
@@ -57,10 +77,12 @@ void Settings::tick() {
     if (m_phase == Phase::OnChoose)
         m_listSelector.shift(getEncoderDir());
 
+    Setting setting = static_cast<Setting>(m_listSelector.pos());
+
     if (m_phase == Phase::OnSet) {
         auto shift = getEncoderDir();
         if (shift)
-            gDisplay.resetBlink();
+            changeValue(setting, shift);
 
         // TODO
     }
@@ -71,7 +93,11 @@ void Settings::tick() {
         m_phase = ADD_TO_ENUM(Phase, m_phase, 1);
 
     if (gBackBtn.click()) {
-        gMemory.saveProg();
+        if (m_phase == Phase::OnSet) {
+            m_phase = Phase::OnChoose;
+            return;
+        }
+
         gApp.setMenu(new MainMenu());
         return;
     }

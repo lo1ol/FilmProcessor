@@ -3,13 +3,19 @@
 #include <ArduinoJson.h>
 #include <EEPROM.h>
 
+#include <assert.h>
+
 #include "Tools.h"
+
+#define SETTINGS_SIZE 100
+
+static_assert(sizeof(Settings) <= SETTINGS_SIZE);
 
 Memory::Memory() {
     m_progNum = 0;
     while (true) {
         ProgDesc progDesc;
-        EEPROM.get(sizeof(progDesc) * m_progNum, progDesc);
+        EEPROM.get(SETTINGS_SIZE + sizeof(progDesc) * m_progNum, progDesc);
 
         bool hasEnd = false;
         for (uint8_t i = 0; i != sizeof(progDesc.name); ++i) {
@@ -21,7 +27,7 @@ Memory::Memory() {
 
         if (!hasEnd) {
             progDesc.name[0] = 0;
-            EEPROM.put(0, progDesc);
+            EEPROM.put(SETTINGS_SIZE, progDesc);
             return;
         }
 
@@ -36,7 +42,7 @@ void Memory::saveProg() {
     uint8_t id = 0;
     while (true) {
         ProgDesc progDesc;
-        EEPROM.get(sizeof(progDesc) * id, progDesc);
+        EEPROM.get(SETTINGS_SIZE + sizeof(progDesc) * id, progDesc);
 
         if (progDesc.name[0] == 0) {
             break;
@@ -48,7 +54,7 @@ void Memory::saveProg() {
         ++id;
     }
 
-    EEPROM.put(sizeof(ProgDesc) * id, m_cachedProg);
+    EEPROM.put(SETTINGS_SIZE + sizeof(ProgDesc) * id, m_cachedProg);
 
     if (id != m_progNum)
         return;
@@ -56,14 +62,14 @@ void Memory::saveProg() {
     ++m_progNum;
     ProgDesc lastProgDesc;
     lastProgDesc.name[0] = 0;
-    EEPROM.put(sizeof(ProgDesc) * m_progNum, lastProgDesc);
+    EEPROM.put(SETTINGS_SIZE + sizeof(ProgDesc) * m_progNum, lastProgDesc);
 }
 
 void Memory::deleteProg() {
     uint8_t id = 0;
     while (true) {
         ProgDesc progDesc;
-        EEPROM.get(sizeof(progDesc) * id, progDesc);
+        EEPROM.get(SETTINGS_SIZE + sizeof(progDesc) * id, progDesc);
 
         if (progDesc.name[0] == 0)
             MyAssert(false);
@@ -76,8 +82,8 @@ void Memory::deleteProg() {
 
     while (true) {
         ProgDesc progDesc;
-        EEPROM.get(sizeof(progDesc) * (id + 1), progDesc);
-        EEPROM.put(sizeof(progDesc) * id, progDesc);
+        EEPROM.get(SETTINGS_SIZE + sizeof(progDesc) * (id + 1), progDesc);
+        EEPROM.put(SETTINGS_SIZE + sizeof(progDesc) * id, progDesc);
 
         if (progDesc.name[0] == 0)
             break;
@@ -92,18 +98,18 @@ uint8_t Memory::getProgNum() const {
 }
 
 void Memory::getProg(uint8_t i, ProgDesc& progDesc) const {
-    EEPROM.get(sizeof(ProgDesc) * i, progDesc);
+    EEPROM.get(SETTINGS_SIZE + sizeof(ProgDesc) * i, progDesc);
 }
 
 void Memory::setProg(uint8_t id) {
-    EEPROM.get(sizeof(ProgDesc) * id, m_cachedProg);
+    EEPROM.get(SETTINGS_SIZE + sizeof(ProgDesc) * id, m_cachedProg);
 }
 
 uint8_t Memory::progId() {
     uint8_t id = 0;
     while (true) {
         ProgDesc progDesc;
-        EEPROM.get(sizeof(progDesc) * id, progDesc);
+        EEPROM.get(SETTINGS_SIZE + sizeof(progDesc) * id, progDesc);
 
         if (progDesc.name[0] == 0)
             MyAssert(false);
@@ -120,7 +126,7 @@ void Memory::dump() const {
     Serial.println("[");
     while (true) {
         ProgDesc progDesc;
-        EEPROM.get(sizeof(ProgDesc) * progId, progDesc);
+        EEPROM.get(SETTINGS_SIZE + sizeof(ProgDesc) * progId, progDesc);
         if (progDesc.name[0] == 0)
             break;
 
@@ -267,7 +273,7 @@ void Memory::load() {
 
         progDesc.steps[stepId].action = ProgDesc::Action::Finish;
 
-        EEPROM.put(sizeof(ProgDesc) * progId, progDesc);
+        EEPROM.put(SETTINGS_SIZE + sizeof(ProgDesc) * progId, progDesc);
         ++progId;
     }
 
@@ -283,7 +289,20 @@ finish:
 
     ProgDesc lastProgDesc;
     lastProgDesc.name[0] = 0;
-    EEPROM.put(sizeof(ProgDesc) * progId, lastProgDesc);
+    EEPROM.put(SETTINGS_SIZE + sizeof(ProgDesc) * progId, lastProgDesc);
     Serial.print(progId);
     Serial.println(" program was loaded");
+}
+
+Settings Memory::getSettings() {
+    Settings settings;
+    EEPROM.get(0, settings);
+
+    if (settings.songId >= SongId::last_)
+        settings.songId = SongId::Simpsons;
+    return settings;
+}
+
+void Memory::saveSettings(Settings settings) {
+    EEPROM.put(0, settings);
 }

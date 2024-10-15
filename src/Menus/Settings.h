@@ -2,6 +2,7 @@
 
 #include "../BaseMenu.h"
 #include "../ListSelector.h"
+#include "../Settings.h"
 
 namespace Menu {
 
@@ -15,11 +16,13 @@ private:
     enum class Setting { Agitation, Melody, last_ };
 
     static const char* getSettingName(Setting);
-    static const char* getSettingValue(Setting);
+    const char* getSettingValue(Setting);
+    void changeValue(Setting setting, int8_t shift);
 
     ListSelector m_listSelector;
     Phase m_phase = Phase::OnChoose;
     Setting m_setting = Setting::Agitation;
+    ::Settings m_settings;
 };
 
 } // namespace Menu

@@ -26,6 +26,8 @@ void setup() {
         gMemory.dump();
     }
 
+    gMemory.getSettings().applySettings();
+
     gApp.setMenu(new Menu::MainMenu());
 }
 
