@@ -6,6 +6,7 @@
 #include "../Tools.h"
 #include "MachineClean.h"
 #include "ProcessList.h"
+#include "Settings.h"
 
 namespace Menu {
 
@@ -25,6 +26,8 @@ const char* MainMenu::getActionName(Action action) {
         return "Process list";
     case Action::CleanMachine:
         return "Clean machine";
+    case Action::Settings:
+        return "Settings";
     case Action::last_:
         MyAssert(false);
     }
@@ -61,6 +64,9 @@ void MainMenu::tick() {
         case Action::CleanMachine:
             m_phase = Phase::OnCleanMachine;
             m_conirmAsker = ConfirmAsker("Clean machine");
+            return;
+        case Action::Settings:
+            gApp.setMenu(new Settings());
             return;
         case Action::last_:
             MyAssert(false);

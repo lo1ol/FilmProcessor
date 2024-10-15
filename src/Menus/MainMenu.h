@@ -12,7 +12,7 @@ public:
     void tick() override;
 
 private:
-    enum class Action : uint8_t { ProcessList, CleanMachine, last_ };
+    enum class Action : uint8_t { ProcessList, CleanMachine, Settings, last_ };
     enum class Phase : uint8_t { OnChoose, OnCleanMachine };
 
     static const char* getActionName(Action);
