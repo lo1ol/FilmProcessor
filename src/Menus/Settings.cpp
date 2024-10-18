@@ -79,8 +79,6 @@ void Settings::tick() {
         auto shift = getEncoderDir();
         if (shift)
             changeValue(setting, shift);
-
-        // TODO
     }
 
     m_listSelector.tick();

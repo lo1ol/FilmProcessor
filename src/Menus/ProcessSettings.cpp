@@ -39,6 +39,7 @@ void ProcessSettings::changeValue(Setting setting, int8_t shift) {
     switch (setting) {
     case Setting::Agitation:
         m_processSettings.agitation = ADD_TO_ENUM(::ProcessSettings::Agitation, m_processSettings.agitation, shift);
+        break;
     case Setting::Volume:
         if (shift < 0)
             m_processSettings.volume =
@@ -53,6 +54,7 @@ void ProcessSettings::changeValue(Setting setting, int8_t shift) {
 
         if (m_processSettings.volume > ::ProcessSettings::Volume::ml700)
             m_processSettings.volume = ::ProcessSettings::Volume::ml700;
+        break;
     case Setting::Start:
     case Setting::last_:
         break;
@@ -105,8 +107,6 @@ void ProcessSettings::tick() {
         auto shift = getEncoderDir();
         if (shift)
             changeValue(setting, shift);
-
-        // TODO
     }
 
     m_listSelector.tick();

@@ -4,6 +4,8 @@ const char* ProcessSettings::getAgitationName(Agitation val) {
     switch (val) {
     case Agitation::Jobo:
         return "Jobo";
+    case Agitation::Continious:
+        return "Cont";
     default:
         return nullptr;
     }
