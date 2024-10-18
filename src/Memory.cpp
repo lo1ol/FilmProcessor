@@ -298,8 +298,21 @@ Settings Memory::getSettings() {
     Settings settings;
     EEPROM.get(0, settings);
 
+    bool isCorrupted = false;
     if (settings.songId >= SongId::last_)
+        isCorrupted = true;
+
+    if (!ProcessSettings::getVolumeName(settings.lastProcessSettings.volume))
+        isCorrupted = true;
+    if (!ProcessSettings::getAgitationName(settings.lastProcessSettings.agitation))
+        isCorrupted = true;
+
+    if (isCorrupted) {
         settings.songId = SongId::Simpsons;
+        settings.lastProcessSettings.agitation = ProcessSettings::Agitation::Jobo;
+        settings.lastProcessSettings.volume = ProcessSettings::Volume::ml300;
+    }
+
     return settings;
 }
 

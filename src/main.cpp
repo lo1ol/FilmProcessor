@@ -32,11 +32,11 @@ void setup() {
 }
 
 void loop() {
-    gRotator.tick();
     gEncoder.tick();
-    gDisplay.tick();
     gModeSwitchBtn.tick();
     gBackBtn.tick();
     gMelodyPlayer.tick();
+    gRotator.tick();
+    gDisplay.tick();
     gApp.tick();
 }

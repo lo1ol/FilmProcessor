@@ -30,6 +30,7 @@ void stopUnLoadChem(uint8_t valvePin, bool stopPump) {
 } // namespace
 
 StepExecutor::StepExecutor(const ProgDesc::Step& step) {
+    m_chemLoadTime = static_cast<uint32_t>(gMemory.getSettings().lastProcessSettings.volume) * CHEM_LOAD_ML_SPEED;
     m_stepTime = step.time * 1000L;
 }
 
@@ -107,13 +108,13 @@ void ChemStepExecutor::tick() {
         m_phase = Phase::LoadChem;
         break;
     case Phase::LoadChem:
-        if (m_passedTime < CHEM_LOAD_TIME)
+        if (m_passedTime < m_chemLoadTime)
             break;
         stopLoadChem(m_targetValve);
         m_phase = Phase::Execute;
         break;
     case Phase::Execute:
-        if (m_passedTime + CHEM_LOAD_TIME + POST_CLEAN_TUBES_TIME < m_stepTime)
+        if (m_passedTime + m_chemLoadTime + POST_CLEAN_TUBES_TIME < m_stepTime)
             break;
 
         if (m_isWaste)
@@ -157,7 +158,7 @@ void ChemStepExecutor::abort() {
         m_stepTime = m_passedTime + POST_CLEAN_TUBES_TIME + 1000;
         break;
     case Phase::Execute:
-        m_stepTime = CHEM_LOAD_TIME + POST_CLEAN_TUBES_TIME;
+        m_stepTime = m_chemLoadTime + POST_CLEAN_TUBES_TIME;
         break;
     case Phase::UnloadChem:
     case Phase::StartPostCleanTube:
@@ -211,8 +212,14 @@ void WashStepExecutor::abort() {
 
 ChemStepExecutor WashStepExecutor::getPhaseWasher(uint16_t time, bool needCleanTube) {
     ProgDesc::Step step{ .action = ProgDesc::Action::Wash };
-    if (time * 1000L >= 4 * CHEM_LOAD_TIME + PURE_WASH_TIME * 2 + POST_CLEAN_TUBES_TIME)
-        step.time = (2 * CHEM_LOAD_TIME + PURE_WASH_TIME + POST_CLEAN_TUBES_TIME) / 1000;
+    uint32_t approxChemWashTime = m_chemLoadTime;
+    if (approxChemWashTime % 1000)
+        approxChemWashTime += 1000;
+    approxChemWashTime /= 1000;
+    approxChemWashTime *= 1000;
+
+    if (time * 1000L >= 4 * approxChemWashTime + PURE_WASH_TIME * 2 + POST_CLEAN_TUBES_TIME)
+        step.time = (2 * approxChemWashTime + PURE_WASH_TIME + POST_CLEAN_TUBES_TIME) / 1000;
     else
         step.time = time;
 

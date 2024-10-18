@@ -1,5 +1,7 @@
 #include "Tools.h"
 
+#include "ProcessSettings.h"
+
 #include <LiquidCrystal.h>
 
 #include <string.h>
@@ -56,8 +58,11 @@ bool getTime(uint16_t& time) {
     sTime += shift * factor;
     sTime = (sTime / factor) * factor;
 
-    if (sTime < (CHEM_LOAD_TIME * 2 + POST_CLEAN_TUBES_TIME) / 1000)
-        sTime = (CHEM_LOAD_TIME * 2 + POST_CLEAN_TUBES_TIME) / 1000;
+    constexpr int32_t kMinTimeMs =
+        CHEM_LOAD_ML_SPEED * static_cast<uint32_t>(ProcessSettings::Volume::ml700) * 2 + POST_CLEAN_TUBES_TIME;
+    constexpr int16_t kMinTimeS = kMinTimeMs / 1000 + (kMinTimeMs % 1000 ? 1 : 0);
+    if (sTime < kMinTimeS)
+        sTime = kMinTimeS;
 
     if (sTime > 60 * 60)
         sTime = 60 * 60;

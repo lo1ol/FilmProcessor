@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ProcessSettings.h"
 #include "ProgDesc.h"
 
 class StepExecutor {
@@ -22,6 +23,7 @@ protected:
     uint32_t m_startTime = 0;
     uint32_t m_passedTime = 0;
     bool m_started = false;
+    uint32_t m_chemLoadTime;
 };
 
 class ChemStepExecutor : public StepExecutor {

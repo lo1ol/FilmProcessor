@@ -25,9 +25,9 @@ const char* ProcessSettings::getSettingName(Setting setting) {
 const char* ProcessSettings::getSettingValue(Setting setting) {
     switch (setting) {
     case Setting::Agitation:
-        return "Jobo";
+        return ::ProcessSettings::getAgitationName(m_processSettings.agitation);
     case Setting::Volume:
-        return "400ml";
+        return ::ProcessSettings::getVolumeName(m_processSettings.volume);
     default:
         return "";
     }
@@ -38,7 +38,21 @@ void ProcessSettings::changeValue(Setting setting, int8_t shift) {
 
     switch (setting) {
     case Setting::Agitation:
+        m_processSettings.agitation = ADD_TO_ENUM(::ProcessSettings::Agitation, m_processSettings.agitation, shift);
     case Setting::Volume:
+        if (shift < 0)
+            m_processSettings.volume =
+                static_cast<::ProcessSettings::Volume>(static_cast<int>(m_processSettings.volume) - 100);
+
+        if (shift > 0)
+            m_processSettings.volume =
+                static_cast<::ProcessSettings::Volume>(static_cast<int>(m_processSettings.volume) + 100);
+
+        if (m_processSettings.volume < ::ProcessSettings::Volume::ml300)
+            m_processSettings.volume = ::ProcessSettings::Volume::ml300;
+
+        if (m_processSettings.volume > ::ProcessSettings::Volume::ml700)
+            m_processSettings.volume = ::ProcessSettings::Volume::ml700;
     case Setting::Start:
     case Setting::last_:
         break;
@@ -62,6 +76,8 @@ ProcessSettings::ProcessSettings() {
     auto maxGetter = [](void*) { return static_cast<uint8_t>(Setting::last_); };
 
     m_listSelector = ListSelector(printer, maxGetter, this);
+
+    m_processSettings = gMemory.getSettings().lastProcessSettings;
 }
 
 void ProcessSettings::tick() {
@@ -96,11 +112,14 @@ void ProcessSettings::tick() {
     m_listSelector.tick();
 
     if (gModeSwitchBtn.click()) {
+        gDisplay.resetBlink(true);
         if (setting == Setting::Start) {
             m_phase = Phase::OnStart;
             m_confirmAsker = ConfirmAsker("Run process");
-        } else {
-            m_phase = ADD_TO_ENUM(Phase, m_phase, 1);
+        } else if (m_phase == Phase::OnChoose) {
+            m_phase = Phase::OnSet;
+        } else if (m_phase == Phase::OnSet) {
+            m_phase = Phase::OnChoose;
         }
     }
 
