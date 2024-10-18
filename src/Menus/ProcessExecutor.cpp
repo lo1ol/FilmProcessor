@@ -3,6 +3,7 @@
 #include "../Memory.h"
 #include "../Tools.h"
 #include "ProcessMenu.h"
+#include "ProcessSettings.h"
 
 namespace Menu {
 
@@ -67,7 +68,7 @@ void ProcessExecutor::tick() {
         return;
 
     if (m_phase == Phase::OnAbort) {
-        gApp.setMenu(new ProcessMenu());
+        gApp.setMenu(new ProcessSettings());
         return;
     }
 

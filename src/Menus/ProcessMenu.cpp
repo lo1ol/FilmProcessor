@@ -7,6 +7,7 @@
 #include "ProcessEdit.h"
 #include "ProcessExecutor.h"
 #include "ProcessList.h"
+#include "ProcessSettings.h"
 #include "ProcessView.h"
 
 namespace Menu {
@@ -64,16 +65,12 @@ void ProcessMenu::tick() {
         return;
     }
 
-    if (m_phase == Phase::OnDelete || m_phase == Phase::OnProcessRun) {
+    if (m_phase == Phase::OnDelete) {
         m_conirmAsker.tick();
         if (m_conirmAsker.finish()) {
             if (m_conirmAsker.result()) {
-                if (m_phase == Phase::OnDelete) {
-                    gMemory.deleteProg();
-                    gApp.setMenu(new ProcessList());
-                } else {
-                    gApp.setMenu(new ProcessExecutor());
-                }
+                gMemory.deleteProg();
+                gApp.setMenu(new ProcessList());
             } else {
                 m_phase = Phase::OnChoose;
             }
@@ -101,8 +98,7 @@ void ProcessMenu::tick() {
             m_conirmAsker = ConfirmAsker("Delete process");
             return;
         case Action::Process:
-            m_phase = Phase::OnProcessRun;
-            m_conirmAsker = ConfirmAsker("Run process");
+            gApp.setMenu(new ProcessSettings());
             return;
         case Action::last_:
             MyAssert(false);

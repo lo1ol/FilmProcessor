@@ -15,7 +15,7 @@ public:
 
 private:
     enum class Action : uint8_t { Process, View, Edit, CreateBasedOn, Delete, last_ };
-    enum class Phase : uint8_t { OnChoose, OnDelete, OnCreateNew, OnProcessRun };
+    enum class Phase : uint8_t { OnChoose, OnDelete, OnCreateNew };
 
     static const char* getActionName(Action);
 

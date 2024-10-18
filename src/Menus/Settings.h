@@ -13,7 +13,7 @@ public:
 
 private:
     enum class Phase { OnChoose, OnSet, last_ };
-    enum class Setting { Agitation, Melody, last_ };
+    enum class Setting { Melody, last_ };
 
     static const char* getSettingName(Setting);
     const char* getSettingValue(Setting);
@@ -21,7 +21,7 @@ private:
 
     ListSelector m_listSelector;
     Phase m_phase = Phase::OnChoose;
-    Setting m_setting = Setting::Agitation;
+    Setting m_setting = Setting::Melody;
     ::Settings m_settings;
 };
 
