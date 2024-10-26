@@ -13,7 +13,7 @@
 #define DISPLAY_COLS 16
 
 #define MODE_SWITCH_BTN A0
-#define BACK_BTN A1
+#define BACK_BTN A12
 
 #define ENCODER_DT 6
 #define ENCODER_CLK 7
@@ -28,9 +28,9 @@
 #define DEV_VALVE A2
 #define BLEACH_VALVE A3
 #define FIX_VALVE A4
-#define EXTRA_VALVE A7
+#define EXTRA_VALVE A13
 #define WATER_VALVE A9
-#define WASTE_VALVE A13
+#define WASTE_VALVE A7
 
 #define CHEM_LOAD_ML_SPEED 17L
 #define PURE_WASH_TIME 15000L
